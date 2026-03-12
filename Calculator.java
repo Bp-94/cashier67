@@ -8,6 +8,7 @@ public class Calculator extends JPanel  implements MouseListener {
 
     public Calculator() {
         bg = new ImageIcon("bg.jpg").getImage();
+        addMouseListener(this);
     }
 
     @Override

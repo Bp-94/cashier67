@@ -2,9 +2,6 @@ import java.awt.*;
 import javax.swing.*;
 
 public class App extends JPanel {
-    
-   
-
     Image bg = new ImageIcon("bg.jpg").getImage();
     public static void main(String[] args) {
         
@@ -16,10 +13,8 @@ public class App extends JPanel {
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         App panel = new App();
-        // JLabel bg = new JLabel(new ImageIcon("bg.jpg"));
-        // panel.add(bg);
-        // Calculator panel = new Calculator();
         frame.setLocationRelativeTo(null);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.add(panel);
         frame.setVisible(true);
     }
