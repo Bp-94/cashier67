@@ -44,12 +44,24 @@ public class App extends JPanel implements MouseListener, MouseMotionListener {
     Rectangle ansRect = new Rectangle(967,620,345,42);
 
     Rectangle clearBtn = new Rectangle(1261,180,28,30);
+    private JTextField currentFocus;
 
     public App(){
 
         addMouseListener(this);
         txt.setPreferredSize(new Dimension(197, 33));
         txtAns.setPreferredSize(new Dimension(200,33));
+        txt.addMouseListener(new MouseAdapter() {
+    public void mouseClicked(MouseEvent e) {
+        currentFocus = txt; // ถ้าคลิกช่องคำนวณ ให้พิมพ์ลงช่องนี้
+    }
+});
+
+txtAns.addMouseListener(new MouseAdapter() {
+    public void mouseClicked(MouseEvent e) {
+        currentFocus = txtAns; // ถ้าคลิกช่องส่งคำตอบ ให้พิมพ์ลงช่องนี้
+    }
+});
     }
     
     public static void main(String[] args){
@@ -232,22 +244,26 @@ public class App extends JPanel implements MouseListener, MouseMotionListener {
     //     }
 
     // }
-    public static int calculate(String exp){
+    public static double calculate(String exp){
         
     String[] tokens = exp.split("(?=[-+*/])|(?<=[-+*/])");
     
-    int result = Integer.parseInt(tokens[0]);
+    double result = Double.parseDouble(tokens[0]);
     
     for(int i = 1; i < tokens.length; i += 2){
         
         String op = tokens[i];
-        int num = Integer.parseInt(tokens[i+1]);
+        double num = Double.parseDouble(tokens[i+1]);
         
         switch(op){
             case "+": result += num; break;
             case "-": result -= num; break;
             case "*": result *= num; break;
-            case "/": result /= num; break;
+            case "/": 
+                if (num == 0) throw new ArithmeticException("Division by zero");
+                result /= num; 
+                break;
+
         }
     }
     
@@ -259,45 +275,46 @@ public class App extends JPanel implements MouseListener, MouseMotionListener {
         int y = e.getY();
         double num1, num2;
         String op;
-
-        if (btn7.contains(x, y)) {
-            txt.setText(txt.getText()+"7");
-        } else if (btn8.contains(x, y)) {
-            txt.setText(txt.getText()+"8");
-        } else if (btn9.contains(x, y)) {
-            txt.setText(txt.getText()+"9");
-        } else if (btn4.contains(x, y)) {
-            txt.setText(txt.getText()+"4");
-        } else if (btn5.contains(x, y)) {
-            txt.setText(txt.getText()+"5");
-        } else if (btn6.contains(x, y)) {
-            txt.setText(txt.getText()+"6");
-        } else if (btn1.contains(x, y)) {
-            txt.setText(txt.getText()+"1");
-        } else if (btn2.contains(x, y)) {
-            txt.setText(txt.getText()+"2");
-        } else if (btn3.contains(x, y)) {
-            txt.setText(txt.getText()+"3");
-        } else if (btn0.contains(x, y)) {
-            txt.setText(txt.getText()+"0");
-        } else if (clearBtn.contains(x, y)) {
-            txt.setText("");
-        } else if (btnAdd.contains(x, y)) {
-            txt.setText(txt.getText()+"+");
-        } else if (btnSub.contains(x, y)) {
-            txt.setText(txt.getText()+"-");
-        } else if (btnMul.contains(x, y)) {
-            txt.setText(txt.getText()+"*");
-        } else if (btnDiv.contains(x, y)) {
-            txt.setText(txt.getText()+"/");
-        } else if (btnEqual.contains(x, y)) {
-            txt.setText(String.valueOf(calculate(txt.getText())));
-        } else if (btnAns.contains(x, y)) {
+        if (currentFocus == null){currentFocus = txt;}
+            if (btn7.contains(x, y)) {
+                currentFocus.setText(currentFocus.getText()+"7");
+            } else if (btn8.contains(x, y)) {
+                currentFocus.setText(currentFocus.getText()+"8");
+            } else if (btn9.contains(x, y)) {
+                currentFocus.setText(currentFocus.getText()+"9");
+            } else if (btn4.contains(x, y)) {
+                currentFocus.setText(currentFocus.getText()+"4");
+            } else if (btn5.contains(x, y)) {
+                currentFocus.setText(currentFocus.getText()+"5");
+            } else if (btn6.contains(x, y)) {
+                currentFocus.setText(currentFocus.getText()+"6");
+            } else if (btn1.contains(x, y)) {
+                currentFocus.setText(currentFocus.getText()+"1");
+            } else if (btn2.contains(x, y)) {
+                currentFocus.setText(currentFocus.getText()+"2");
+            } else if (btn3.contains(x, y)) {
+                currentFocus.setText(currentFocus.getText()+"3");
+            } else if (btn0.contains(x, y)) {
+                currentFocus.setText(currentFocus.getText()+"0");
+            } else if (clearBtn.contains(x, y)) {
+                currentFocus.setText("");
+            } else if (btnAdd.contains(x, y)) {
+                currentFocus.setText(currentFocus.getText()+"+");
+            } else if (btnSub.contains(x, y)) {
+                currentFocus.setText(currentFocus.getText()+"-");
+            } else if (btnMul.contains(x, y)) {
+                currentFocus.setText(currentFocus.getText()+"*");
+            } else if (btnDiv.contains(x, y)) {
+                currentFocus.setText(currentFocus.getText()+"/");
+            } else if (btnEqual.contains(x, y)) {
+                currentFocus.setText(String.valueOf(calculate(currentFocus.getText())));
+            } else if (btnAns.contains(x, y)) {
             ////////////
-        } else if (btnDot.contains(x, y)) {
-            txt.setText(txt.getText()+".");
+            } else if (btnDot.contains(x, y)) {
+                currentFocus.setText(currentFocus.getText()+".");
+            }
         }
-    }
+    
     public void mouseReleased(MouseEvent e){}
     public void mouseEntered(MouseEvent e){}
     public void mouseExited(MouseEvent e){}
