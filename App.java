@@ -93,7 +93,7 @@ public class App extends JPanel implements MouseListener,ActionListener, MouseMo
         frame.setSize(1920,1080);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        App panel = new App(new GameP(null, 0));
+        App panel = new App(new GameP());
         panel.setLayout(null);
         txt.setFont(myFont);
         txtAns.setFont(myFont);
@@ -250,7 +250,7 @@ public void mouseClicked(MouseEvent e){
                 int floorAns = (int)Math.floor(ans); // ปัดลงเสมอ
                 currentFocus.setText(String.valueOf(floorAns));
             } else if (btnAns.contains(x, y)) {
-                txtAns.setText("asdpookokfawofjawfpawepoewfon");
+                
                 this.notifyObserver(txtAns.getText()); // ส่งคำตอบไปให้ Game ตรวจสอบ
             } else if (btnDot.contains(x, y)) {
                 currentFocus.setText(currentFocus.getText()+".");
