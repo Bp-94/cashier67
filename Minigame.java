@@ -1,7 +1,6 @@
 public abstract class Minigame {
     protected boolean isFinish;
     protected boolean isPass;
-    protected int timeLimit;
 
     public void setFinish(boolean isFinish){
         this.isFinish = isFinish;
@@ -14,9 +13,6 @@ public abstract class Minigame {
     }
     public boolean getPass(){
         return isPass;
-    }
-    public int getTimeLimit(){
-        return timeLimit ;
     }
 
     public abstract void play();
