@@ -1,18 +1,14 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.text.*;
 
 public class App extends JPanel implements MouseListener, MouseMotionListener {
 
     Image bg = new ImageIcon("bg.jpg").getImage();
 
-    private String expression = "";
-    private String result = "";
-
     private static JTextField txt = new JTextField();
     private static JTextField txtAns =  new JTextField();
-
-    
 
     int mouseX;
     int mouseY;
@@ -42,7 +38,6 @@ public class App extends JPanel implements MouseListener, MouseMotionListener {
     Rectangle btnAns = new Rectangle(1330,620,50,50);
     Rectangle txtRect = new Rectangle(1051,175,202,40);
     Rectangle ansRect = new Rectangle(967,620,345,42);
-
     Rectangle clearBtn = new Rectangle(1261,180,28,30);
     private JTextField currentFocus;
 
@@ -52,16 +47,31 @@ public class App extends JPanel implements MouseListener, MouseMotionListener {
         txt.setPreferredSize(new Dimension(197, 33));
         txtAns.setPreferredSize(new Dimension(200,33));
         txt.addMouseListener(new MouseAdapter() {
-    public void mouseClicked(MouseEvent e) {
-        currentFocus = txt; // ถ้าคลิกช่องคำนวณ ให้พิมพ์ลงช่องนี้
-    }
-});
+            public void mouseClicked(MouseEvent e) {
+                currentFocus = txt; // ถ้าคลิกช่องคำนวณ ให้พิมพ์ลงช่องนี้
+            }
+        });
 
-txtAns.addMouseListener(new MouseAdapter() {
-    public void mouseClicked(MouseEvent e) {
-        currentFocus = txtAns; // ถ้าคลิกช่องส่งคำตอบ ให้พิมพ์ลงช่องนี้
-    }
-});
+        txtAns.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+            currentFocus = txtAns; // ถ้าคลิกช่องส่งคำตอบ ให้พิมพ์ลงช่องนี้
+            }
+        });
+
+        // ล็อกให้ txtAns พิมพ์ได้เฉพาะตัวเลข
+        ((AbstractDocument) txtAns.getDocument()).setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
+                    throws BadLocationException {
+
+                String current = fb.getDocument().getText(0, fb.getDocument().getLength());
+                String newText = current.substring(0, offset) + text + current.substring(offset + length);
+
+                if (newText.matches("\\d*")) { // อนุญาตเฉพาะตัวเลข และว่างได้
+                    super.replace(fb, offset, length, text, attrs);
+                }
+            }
+        });
     }
     
     public static void main(String[] args){
@@ -83,6 +93,7 @@ txtAns.addMouseListener(new MouseAdapter() {
         txtAns.setBackground(new Color(0,0,0,0)); // ตั้งค่าสีพื้นหลังเป็นใส (Alpha = 0)
         txtAns.setBorder(null);                 // เอาเส้นขอบสี่เหลี่ยมออก
         txt.setBounds(1051, 175,202,40);
+        txt.setCaretColor(new Color(0,0,0,0));
         txtAns.setBounds(967, 620, 345, 42);
         txt.setEditable(false);
         // txt.setOpaque(false);
@@ -161,89 +172,6 @@ txtAns.addMouseListener(new MouseAdapter() {
 
     }
 
-    // public void click(int x,int y){
-
-    //     if(btn7.contains(x,y)) expression+="7";
-    //     else if(btn8.contains(x,y)) expression+="8";
-    //     else if(btn9.contains(x,y)) expression+="9";
-
-    //     else if(btn4.contains(x,y)) expression+="4";
-    //     else if(btn5.contains(x,y)) expression+="5";
-    //     else if(btn6.contains(x,y)) expression+="6";
-
-    //     else if(btn1.contains(x,y)) expression+="1";
-    //     else if(btn2.contains(x,y)) expression+="2";
-    //     else if(btn3.contains(x,y)) expression+="3";
-
-    //     else if(btn0.contains(x,y)) expression+="0";
-    //     else if(btnDot.contains(x,y)) expression+=".";
-
-    //     else if(btnAdd.contains(x,y)) expression+="+";
-    //     else if(btnSub.contains(x,y)) expression+="-";
-    //     else if(btnMul.contains(x,y)) expression+="*";
-    //     else if(btnDiv.contains(x,y)) expression+="/";
-
-    //     else if(btnEqual.contains(x,y)) calculate();
-
-    //     else if(clearBtn.contains(x,y)){
-    //         expression="";
-    //         result="";
-    //     }
-
-    // }
-
-    // public void calculate(){
-
-    //     try{
-
-    //         if(expression.contains("+")){
-
-    //             String[] part = expression.split("\\+");
-
-    //             double a = Double.parseDouble(part[0]);
-    //             double b = Double.parseDouble(part[1]);
-
-    //             result=""+(a+b);
-    //         }
-
-    //         else if(expression.contains("-")){
-
-    //             String[] part = expression.split("-");
-
-    //             double a = Double.parseDouble(part[0]);
-    //             double b = Double.parseDouble(part[1]);
-
-    //             result=""+(a-b);
-    //         }
-
-    //         else if(expression.contains("*")){
-
-    //             String[] part = expression.split("\\*");
-
-    //             double a = Double.parseDouble(part[0]);
-    //             double b = Double.parseDouble(part[1]);
-
-    //             result=""+(a*b);
-    //         }
-
-    //         else if(expression.contains("/")){
-
-    //             String[] part = expression.split("/");
-
-    //             double a = Double.parseDouble(part[0]);
-    //             double b = Double.parseDouble(part[1]);
-
-    //             result=""+(a/b);
-    //         }
-
-    //     }
-    //     catch(Exception e){
-
-    //         result="error";
-
-    //     }
-
-    // }
     public static double calculate(String exp){
         
     String[] tokens = exp.split("(?=[-+*/])|(?<=[-+*/])");
@@ -307,7 +235,9 @@ txtAns.addMouseListener(new MouseAdapter() {
             } else if (btnDiv.contains(x, y)) {
                 currentFocus.setText(currentFocus.getText()+"/");
             } else if (btnEqual.contains(x, y)) {
-                currentFocus.setText(String.valueOf(calculate(currentFocus.getText())));
+                double ans = calculate(currentFocus.getText());
+                int floorAns = (int)Math.floor(ans); // ปัดลงเสมอ
+                currentFocus.setText(String.valueOf(floorAns));
             } else if (btnAns.contains(x, y)) {
             ////////////
             } else if (btnDot.contains(x, y)) {
