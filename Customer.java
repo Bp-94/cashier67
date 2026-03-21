@@ -3,20 +3,20 @@ import java.awt.event.*;
 import java.awt.*;
 import java.util.*;
 
-public class Customer implements Obserable, ActionListener {
+public class Customer implements Obserable, Runnable, MouseListener {
     private ArrayList<Observer> observers = new ArrayList<>();
     private ArrayList<Goods> goodsToBuy;
-    private int countWrong;
-    private boolean haveAlcohol;
-    private boolean haveCoupon;
-    private int age;
-    private double discount;
-    private double finalPrice;
-    private double payment;
-//    private ImageIcon customer;
+    private int age, countWrong;
+    private boolean haveAlcohol, haveCoupon, leaving;
+    private double discount, finalPrice, payment;
+    private Game game;
+    private Random random;
+    private Rectangle id_card, coupon, closeCoupon, sell, notSell;
     
     public Customer(Game game) {
-        Random random = new Random();
+        this.game = game;
+        this.add(game); //notifyObserver
+        random = new Random();
         goodsToBuy = new ArrayList<>();
         int amountToBuy = random.nextInt(10) + 1;
         haveAlcohol = false;
@@ -31,24 +31,73 @@ public class Customer implements Obserable, ActionListener {
             finalPrice += g.getPrice();
         }
         if (haveAlcohol) {
-            int[] ages = {18, 19, 21, 25};
+            int ages[] = {18, 19, 21, 25};
             age = ages[random.nextInt(ages.length)];
-//            add ภาพ ID_Card บนโต๊ะ
-//            add ActionListener ให้ ID_Card
+            game.add(new JLabel(new ImageIcon("CustomerImage/mini_ID.png")));
+            //id_card = new Rectangle(,,,,)
         }else {
             haveCoupon = random.nextDouble() < 0.3; //มีโอกาส 30%
             if (haveCoupon) {
-                int[] discounts = {25, 50};
+                int discounts[] = {25, 50};
                 discount = discounts[random.nextInt(discounts.length)];
                 finalPrice -= finalPrice * (discount / 100);
-//                add ภาพ Coupon บนโต๊ะ
+                game.add(new JLabel(new ImageIcon("CustomerImage/miniCoupon.png")));
+                //coupon = new Rectangle(,,,,)
             }
         }
         countWrong = 0;
-        this.add(game);
-//        int imageIndex = random.nextInt(5) + 1;
-//        CustomerImage = ("CustomerImage" + imageIndex);
+        leaving = false;
+        Thread thread = new Thread(this);
+        thread.start();
     }
+    
+    @Override
+    public void run() {
+        //// SOS ////
+        int imageIndex = random.nextInt(6) + 1;
+        ImageIcon icon = new ImageIcon("CustomerImage/Customer" + imageIndex + ".png");
+        int originalW = icon.getIconWidth();
+        int originalH = icon.getIconHeight();
+        int newH = game.getHeight() * 2360 / 1080; //จากภาพต้นฉบับที่ฉากหลังสูง 1080 ลูกค้าสูง 2360
+        int newW = originalW * newH / originalH;
+        Image newImg = icon.getImage().getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
+        JLabel customer = new JLabel(new ImageIcon(newImg));
+        int y = game.getWidth() - newW - 200;
+        customer.setBounds(-newW, y, newW, newH);
+        game.add(customer);
+        game.repaint();
+        int targetX = game.getWidth() / 100;
+        ////
+        // เดินเข้า
+        while (customer.getX() < targetX) {
+            customer.setLocation(customer.getX() + 5, y);
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        //รอ leave()
+        while (!leaving) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        // เดินออก
+        while (customer.getX() < game.getWidth()) {
+            customer.setLocation(customer.getX() + 5, y);
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        game.remove(customer);
+        game.repaint();
+    }
+    
     public boolean checkPrice(double playerInput) {
         if (Math.abs(playerInput - finalPrice) < 0.01) { //double มีโอกาส ค่าไม่เท่ากันทั้งที่ควรเท่า เลยใช้วิธีนี้เทีบ double
             return true;
@@ -66,17 +115,18 @@ public class Customer implements Obserable, ActionListener {
         return false;
     }
     public void leave() {
-        //ภาพลูกค้าเลื่อนออก 
+        leaving = true;
         this.notifyObserver("CustomerLeft");
     }
     public void showID_Card() {
-        //สร้างหน้าต่าง
-        //เพิ่มภาพบัตรที่อายุตามที่สุ่มได้ลงในหน้าต่าง (age)
-        //ปุ่มขายหรือไม่ขาย
-        //โชว์
+        JDialog dialog = new JDialog(game);
+        JLabel show = new JLabel(new ImageIcon("ID" + age + ".png"));
+        
     }
     public void showCoupon() {
-        //แสดงภาพของคูปองตามที่สุ่มได้ (discount)
+         JDialog dialog = new JDialog(game);
+         JLabel show = new JLabel(new ImageIcon("Coupon" + discount + ".png"));
+         
     }
     
     //Setter&Getter
@@ -103,15 +153,19 @@ public class Customer implements Obserable, ActionListener {
             observer.update(message); } 
     }
     //
-    
+
     @Override
-    public void actionPerformed(ActionEvent ae) {
+    public void mouseClicked(MouseEvent e) {
 //        if (ae.getSource().equals(ID_Card)) {
 //            this.showID_Card();
 //        }else if (ae.getSource().equals(Coupon)) {
 //            this.showCoupon();
 //        }
-//        ปุ่มไม่ขายเหล้าให้ -> เดินออกไปเลย
+//        ปุ่มไม่ขายเหล้าให้
                 
     }
+    @Override public void mousePressed(MouseEvent e) {}
+    @Override public void mouseReleased(MouseEvent e) {}
+    @Override public void mouseEntered(MouseEvent e) {}
+    @Override public void mouseExited(MouseEvent e) {}
 }
