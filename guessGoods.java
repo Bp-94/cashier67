@@ -138,30 +138,50 @@ public class guessGoods extends Minigame implements ActionListener {
                 if(selectAns.equals(correctAns)){
                     score++;
                 }
-                if(score >= 5){
-                    this.isPass = true;
-                    this.isFinish = true;
-                    dialog.dispose();
-                }else{
-                    currentImgindex++;
+                checkWincondition();
+                break;
+            //     if(score >= 5){
+            //         this.isPass = true;
+            //         this.isFinish = true;
+            //         dialog.dispose();
+            //     }else{
+            //         currentImgindex++;
 
-                    if(currentImgindex >= imgKeys.size()){
-                        currentImgindex = 0;
-                        Collections.shuffle(imgKeys);
-                        createChoice();
-                    }
-                    int imgSize = 250;
-                    ImageIcon pImg = getScaledImgIcon(imgKeys.get(currentImgindex), imgSize, imgSize);
-                    productImg.setIcon(pImg);
-                    updateChoice();
-                }
+            //         if(currentImgindex >= imgKeys.size()){
+            //             currentImgindex = 0;
+            //             Collections.shuffle(imgKeys);
+            //             createChoice();
+            //         }
+            //         int imgSize = 250;
+            //         ImageIcon pImg = getScaledImgIcon(imgKeys.get(currentImgindex), imgSize, imgSize);
+            //         productImg.setIcon(pImg);
+            //         updateChoice();
+            //     }
+            // }
             }
         }
     }
 
     @Override
     public boolean checkWincondition() {
-        return this.isPass;
+        if(score >= 5){
+            this.isPass = true;
+            this.isFinish = true;
+            dialog.dispose();
+        }else{
+            currentImgindex++;
+
+            if(currentImgindex >= imgKeys.size()){
+                currentImgindex = 0;
+                Collections.shuffle(imgKeys);
+                createChoice();
+            }
+            int imgSize = 250;
+            ImageIcon pImg = getScaledImgIcon(imgKeys.get(currentImgindex), imgSize, imgSize);
+            productImg.setIcon(pImg);
+            updateChoice();
+        }
+        return isPass;
     }
 
     public static void main(String[] args) {
