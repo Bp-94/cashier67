@@ -3,11 +3,16 @@ import javax.swing.*;
 import java.awt.event.*;
 import javax.swing.event.*;
 public class Game extends JFrame implements Observer {
-    
+
+    private Font customFont;
+
     private Customer currentcustomer;
     private Customer presentCustomer;
+
     private LevelCanvas levelCanvas;
-    private double dept;
+
+    private double dept = 150;
+
     public static final Goods goodsList[] = {
         new Goods("Alcohol",250),
         new Goods("A",500),
@@ -45,6 +50,12 @@ public class Game extends JFrame implements Observer {
         System.out.println(getWidth() + " " + getHeight());
     }
     
+    public Goods[] getGoodsList() {
+    return goodsList;
+    }
+    // public void setGoodsLists(Goods[] goodsList){
+    //     this.goodsList = goodsList;
+    // }
     public void setDept(double dept) {
         this.dept = dept;
     }

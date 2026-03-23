@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,9 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.text.*;
 public class LevelCanvas extends JPanel implements MouseListener,ActionListener, MouseMotionListener, Obserable {
-     private List<Observer> observers = new ArrayList<>();
+    private Font customFont;
+
+    private List<Observer> observers = new ArrayList<>();
 
     Image bg = new ImageIcon("Asset/bg.png").getImage();
     Image table_calculator_goodslist = new ImageIcon("Asset/Calculator_Table_ListGoods.png").getImage();
@@ -15,12 +18,18 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
 
     private static JTextField txt = new JTextField();
     private static JTextField txtAns =  new JTextField();
+    private JTextField currentFocus;
+
     public Observer Game;
     int mouseX;
     int mouseY;
 
     int baseWidth = 1537;
     int baseHeight = 795;
+    
+    private double debt;
+
+    
 
     Rectangle btn7 = new Rectangle(1063,302,50,45);
     Rectangle btn8 = new Rectangle(1119,303,50,43);
@@ -46,23 +55,29 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     Rectangle ansRect = new Rectangle(967,620,345,42);
     Rectangle clearBtn = new Rectangle(1261,180,28,30);
     Rectangle customerRect = new Rectangle(200, 200, 450, 700);
-    private JTextField currentFocus;
-    private JLabel debtlabel;
     
     public LevelCanvas(Game game) {
+        debt =  game.getDept();
+        try {
+            customFont = Font.createFont(Font.TRUETYPE_FONT, new File("2005_iannnnnJPG.ttf"));
+            customFont = customFont.deriveFont(68f);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         this.add((Observer) game);
         addMouseListener(this);
         
         
-        debtlabel = new JLabel(String.valueOf(game.getDept()));
+        
 
-        setOpaque(false);
+        setOpaque(true);
         setLayout(null);
 
-        Font myFont = new Font("Serif", Font.PLAIN, 20);
+        
 
-        txt.setFont(myFont);
-        txtAns.setFont(myFont);
+        txt.setFont(customFont);
+        txtAns.setFont(customFont);
 
         txt.setOpaque(false);
         txt.setBackground(new Color(0,0,0,0));
@@ -82,7 +97,7 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         add(txt);
         txt.setPreferredSize(new Dimension(197, 33));
         txtAns.setPreferredSize(new Dimension(200,33));
-        
+
         txt.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 currentFocus = txt; // ถ้าคลิกช่องคำนวณ ให้พิมพ์ลงช่องนี้
@@ -185,15 +200,29 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     }
     // วาดรูปลง JPanel
     protected void paintComponent(Graphics g){
-        Rectangle r = scale(customerRect);
         super.paintComponent(g);
+        Rectangle r = scale(customerRect);
+        int debtx = 500;
+        int debty = 55;
+
+        double scaleX = getWidth()/(double)baseWidth;
+        double scaleY = getHeight() / (double)baseHeight;
+        
+        double scaledebt = Math.min(scaleX, scaleY);
+
+        int x = (int)(debtx * scaleX);
+        int y = (int)(debty * scaleY);
+
         
         Graphics2D g2 = (Graphics2D) g;
         
         g2.drawImage(bg,0,0,getWidth(),getHeight(),this);
         g2.drawImage(CustomerBank, r.x, r.y, r.width, r.height, this);
         g2.drawImage(table_calculator_goodslist,0,0,getWidth(),getHeight(),this);
+        g2.setFont(customFont.deriveFont((float)(68 * scaledebt)) );
+        g2.setColor(Color.WHITE);
         
+        g2.drawString(String.valueOf(debt), x, y);
         g2.setColor(Color.RED);
         
         g2.draw(scale(btn7));
@@ -258,7 +287,7 @@ public void mouseClicked(MouseEvent e){
     double num1, num2;
     String op;
     if (currentFocus == null){currentFocus = txt;}
-    if (btn7.contains(e.getPoint())) {
+    if (btn7.contains(x,y)) {
         currentFocus.setText(currentFocus.getText()+"7");
     } else if (btn8.contains(x, y)) {
         currentFocus.setText(currentFocus.getText()+"8");
