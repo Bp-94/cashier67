@@ -11,12 +11,21 @@ public class Game extends JFrame implements Observer {
 
     private LevelCanvas levelCanvas;
 
+    private int level;
+
     private double dept = 150;
 
     public static final Goods goodsList[] = {
-        new Goods("Alcohol",250),
-        new Goods("A",500),
-        new Goods("B", 10000)
+        new Goods("Alcohol",120),
+        new Goods("Orange",46),
+        new Goods("Apple", 49),
+        new Goods("Water", 50),
+        new Goods("Bannana", 44),
+        new Goods("Chocolate", 20),
+        new Goods("Pockey", 25),
+        new Goods("Jelly", 35),
+        new Goods("egg", 60)
+        
     };
     public Game(){
         
@@ -56,6 +65,13 @@ public class Game extends JFrame implements Observer {
     // public void setGoodsLists(Goods[] goodsList){
     //     this.goodsList = goodsList;
     // }
+    public LevelCanvas getLevelCanvas(){
+        return levelCanvas;
+    }
+    public int getLevel(){
+        return level;
+    }
+
     public void setDept(double dept) {
         this.dept = dept;
     }
