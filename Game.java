@@ -16,19 +16,19 @@ public class Game extends JFrame implements Observer {
     private double dept = 1200;
 
     public static final Goods goodsList[] = {
-        new Goods("Alcohol",120),
-        new Goods("Orange",46),
-        new Goods("Apple", 49),
-        new Goods("Water", 50),
-        new Goods("Bannana", 44),
-        new Goods("Chocolate", 20),
-        new Goods("Pockey", 25),
-        new Goods("Jelly", 35),
-        new Goods("egg", 60)
+        new Goods("Alcohol", "Goods/เหล้า.png",120),
+        new Goods("Orange", "Goods/ส้ม.png",46),
+        new Goods("Apple", "Goods/แอปเปิล.png", 49),
+        new Goods("Water", "Goods/น้ำเปล่า.png", 50),
+        new Goods("Bannana", "Goods/กล้วย.png", 44),
+        new Goods("Chocolate", "Goods/ขนมช็อคโกแลต.png", 20),
+        new Goods("Pockey", "Goods/ขนมป้อกกี้.png", 25),
+        new Goods("Jelly", "Goods/ขนมเยลลี่.png", 35),
+        new Goods("egg", "Goods/ไข่.png", 60)
         
     };
     public Game(){
-        
+        presentCustomer = new Customer(this);
         JLabel BackGround,Customer,TableAndCalculator,PresentLevel;
         
         setSize(1920,1080);
@@ -71,7 +71,9 @@ public class Game extends JFrame implements Observer {
     public int getLevel(){
         return level;
     }
-
+    public Customer getCustomer(){
+        return presentCustomer;
+    }
     public void setDept(double dept) {
         this.dept = dept;
     }
@@ -95,7 +97,7 @@ public class Game extends JFrame implements Observer {
         if (time == 0){
             boolean result = currentGame.isWinOrLose(debt);
             if (result){
-                System.out.println("next level");
+                ;
             }
             else{
                 System.out.println("return to home");
@@ -118,10 +120,13 @@ public class Game extends JFrame implements Observer {
             // if (presentCustomer.getAge() < 20){
                 
             // }
-            if (presentCustomer.checkPrice(playerInput)) {
-                this.setDept(this.getDept() + presentCustomer.getPayment());
-                presentCustomer.leave();
+            if (presentCustomer.getX() == presentCustomer.getTargetX()){
 
+                if (presentCustomer.checkPrice(playerInput)) {
+                    this.setDept(this.getDept() + presentCustomer.getPayment());
+                    presentCustomer.leave();
+    
+                }
             }
         }catch (NumberFormatException e) {}
 

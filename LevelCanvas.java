@@ -16,12 +16,13 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     Image bg = new ImageIcon("Asset/bg.png").getImage();
     Image table_calculator_goodslist = new ImageIcon("Asset/Calculator_Table_ListGoods.png").getImage();
     Image CustomerBank = new ImageIcon("Asset/CustomerBank.png").getImage();
+    Image presentcustomerImg;
     // Image goodsList = new ImageIcon("Asset/ListGoods.png");
 
     private static JTextField txt = new JTextField();
     private static JTextField txtAns =  new JTextField();
     private JTextField currentFocus;
-
+    private Customer presentcustomer;
     public Observer Game;
     int mouseX;
     int mouseY;
@@ -57,20 +58,23 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     Rectangle ansRect = new Rectangle(967,620,345,42);
     Rectangle clearBtn = new Rectangle(1261,180,28,30);
 
-    Rectangle customerRect = new Rectangle(200, 200, 450, 700);
+    Rectangle customerRect = new Rectangle(0, 0, 950, 1250);
     
     Rectangle goodsListRect = new Rectangle(1050,715,335,400);
 
+    Rectangle goodRect = new Rectangle(206,550,150,150);
+
     public LevelCanvas(Game game) {
         timerLogic = new MyTimer(5);
-
+        presentcustomer = game.getCustomer();
+        presentcustomerImg = new ImageIcon(presentcustomer.getimagePath()).getImage();
         // 2. สร้าง Thread แยกเพื่อให้นาฬิกาวิ่งเลนขนาน (หน้าจอจะได้ไม่ค้าง)
         Thread t = new Thread(timerLogic);
         t.start();
 
         // 3. สร้าง Timer ตัวเล็กๆ เพื่อสั่งให้หน้าจอ "วาดใหม่" (Repaint) ทุกๆ 0.1 วินาที
         // เพื่อให้เลขนาฬิกาที่อัปเดตใน Thread โชว์บนหน้าจอทันที
-        Timer refresh = new Timer(100, e -> repaint());
+        Timer refresh = new Timer(16, e -> repaint());
         refresh.start();
         debt =  game.getDept();
         try {
@@ -242,12 +246,16 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
         Rectangle r = scale(customerRect);
+        Rectangle gd = scale(goodRect);
         // Rectangle gl = scale(goodsListRect);
         int debtx = 500;
         int debty = 55;
 
         int timex = 1000;
         int timey = 55;
+        
+        int goodx = 206;
+        int goody = 550;
 
         double scaleX = getWidth()/(double)baseWidth;
         double scaleY = getHeight() / (double)baseHeight;
@@ -259,12 +267,23 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         
         int tx = (int)(timex * scaleX);
         int ty = (int)(timey * scaleY);
+
+        int gx = (int)(goodx * scaleX);
+        int gy = (int)(goody * scaleY);
         
         Graphics2D g2 = (Graphics2D) g;
         
         g2.drawImage(bg,0,0,getWidth(),getHeight(),this);
-        g2.drawImage(CustomerBank, r.x, r.y, r.width, r.height, this);
+        g2.drawImage(presentcustomerImg,presentcustomer.getX(),r.y,r.width,r.height,this);
         g2.drawImage(table_calculator_goodslist,0,0,getWidth(),getHeight(),this);
+        if (presentcustomer.getX() == presentcustomer.getTargetX()){
+            for(int i = 0;i < presentcustomer.getAmountToBuy() ; i++){
+                Goods good = presentcustomer.getGoodsToBuy().get(i);
+                Image gicon = new ImageIcon(good.getImagePath()).getImage();
+                g2.drawImage(gicon,gx,gy,gd.width,gd.height,this);
+                gx += 75;
+            }
+        }
 
         String timeToShow = timerLogic.getTimeString();
 
@@ -303,6 +322,8 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         g2.draw(scale(btnAns));
         g2.draw(scale(clearBtn));
         g2.draw(scale(goodsListRect));
+        g2.draw(scale(goodRect));
+        g2.draw(scale(customerRect));
     }
     
     public static double calculate(String exp){

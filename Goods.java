@@ -1,9 +1,9 @@
 public class Goods {
     private String name;
-//    private String imagePath;
+   private String imagePath;
     private int price;
-//    public Goods(String name, String imagePath, int price) {
-    public Goods(String name, int price) {
+   public Goods(String name, String imagePath, int price) {
+        this.imagePath = imagePath;
         this.name = name;
         this.price = price;
     }
@@ -13,12 +13,12 @@ public class Goods {
     public void setName(String name) {
         this.name = name;
     }
-//    public String getImagePath() {
-//        return imagePath;
-//    }
-//    public void setImagePath(String imagePath) {
-//        this.imagePath = imagePath;
-//    }
+   public String getImagePath() {
+       return imagePath;
+   }
+   public void setImagePath(String imagePath) {
+       this.imagePath = imagePath;
+   }
     public int getPrice() {
         return price;
     }
