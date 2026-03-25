@@ -6,19 +6,28 @@ import java.util.*;
 public class Customer implements Obserable, Runnable, MouseListener {
     private ArrayList<Observer> observers = new ArrayList<>();
     private ArrayList<Goods> goodsToBuy;
-    private int age, countWrong;
+    private int amountToBuy, discount, age, countWrong, targetX, x;
     private boolean haveAlcohol, haveCoupon, leaving;
-    private double discount, finalPrice, payment;
+    private double finalPrice, payment;
+    private String imagePath;
     private Game game;
     private Random random;
-    private Rectangle id_card, coupon, closeCoupon, sell, notSell;
+    private JDialog dialog;
+    private Rectangle closeCoupon, sell, notSell;
     
     public Customer(Game game) {
         this.game = game;
         this.add(game); //notifyObserver
         random = new Random();
+        int imageIndex = random.nextInt(6) + 1;
+        imagePath = "CustomerImage/Customer" + imageIndex + ".png";
+        x = -50;
         goodsToBuy = new ArrayList<>();
-        int amountToBuy = random.nextInt(10) + 1;
+        if (game.getLevel() <= 3) {
+            amountToBuy = random.nextInt(7) + 1;
+        }else {
+            amountToBuy = random.nextInt(3) + 1;
+        }
         haveAlcohol = false;
         finalPrice = 0;
         for (int i = 0; i < amountToBuy; i++) {
@@ -33,18 +42,15 @@ public class Customer implements Obserable, Runnable, MouseListener {
         if (haveAlcohol) {
             int ages[] = {18, 19, 21, 25};
             age = ages[random.nextInt(ages.length)];
-            game.add(new JLabel(new ImageIcon("CustomerImage/mini_ID.png")));
-            //id_card = new Rectangle(,,,,)
         }else {
             haveCoupon = random.nextDouble() < 0.3; //มีโอกาส 30%
             if (haveCoupon) {
                 int discounts[] = {25, 50};
                 discount = discounts[random.nextInt(discounts.length)];
                 finalPrice -= finalPrice * (discount / 100);
-                game.add(new JLabel(new ImageIcon("CustomerImage/miniCoupon.png")));
-                //coupon = new Rectangle(,,,,)
             }
         }
+        payment = finalPrice;
         countWrong = 0;
         leaving = false;
         Thread thread = new Thread(this);
@@ -53,24 +59,10 @@ public class Customer implements Obserable, Runnable, MouseListener {
     
     @Override
     public void run() {
-        //// SOS ////
-        int imageIndex = random.nextInt(6) + 1;
-        ImageIcon icon = new ImageIcon("CustomerImage/Customer" + imageIndex + ".png");
-        int originalW = icon.getIconWidth();
-        int originalH = icon.getIconHeight();
-        int newH = game.getHeight() * 2360 / 1080; //จากภาพต้นฉบับที่ฉากหลังสูง 1080 ลูกค้าสูง 2360
-        int newW = originalW * newH / originalH;
-        Image newImg = icon.getImage().getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
-        JLabel customer = new JLabel(new ImageIcon(newImg));
-        int y = game.getWidth() - newW - 200;
-        customer.setBounds(-newW, y, newW, newH);
-        game.add(customer);
-        game.repaint();
-        int targetX = game.getWidth() / 100;
-        ////
+        targetX = 200;
         // เดินเข้า
-        while (customer.getX() < targetX) {
-            customer.setLocation(customer.getX() + 5, y);
+        while (x < targetX) {
+            x += 5;
             try {
                 Thread.sleep(20);
             } catch (InterruptedException e) {
@@ -86,16 +78,15 @@ public class Customer implements Obserable, Runnable, MouseListener {
             }
         }
         // เดินออก
-        while (customer.getX() < game.getWidth()) {
-            customer.setLocation(customer.getX() + 5, y);
+        while (x < game.getWidth()) {
+            x += 5;
             try {
                 Thread.sleep(20);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        game.remove(customer);
-        game.repaint();
+        game.getLevelCanvas().repaint();
     }
     
     public boolean checkPrice(double playerInput) {
@@ -105,28 +96,49 @@ public class Customer implements Obserable, Runnable, MouseListener {
         countWrong += 1;
         if (countWrong == 1) {
             payment *= 0.75;
-//            ใส่ภาพเครื่องหมาย
         }else if (countWrong == 2) {
             payment *= 0.5;
-//            ใส่ภาพเครื่องหมาย
         }else {
             this.leave();
         }
         return false;
     }
+    
     public void leave() {
         leaving = true;
         this.notifyObserver("CustomerLeft");
     }
+    
     public void showID_Card() {
-        JDialog dialog = new JDialog(game);
-        JLabel show = new JLabel(new ImageIcon("ID" + age + ".png"));
-        
+        dialog = new JDialog(game, true);
+        dialog.setSize(game.getWidth() - 100, game.getHeight() - 100);
+        dialog.setLocationRelativeTo(game);
+        dialog.setUndecorated(true);
+        dialog.setBackground(new Color(0, 0, 0, 0));
+        ImageIcon icon = new ImageIcon("CustomerImage/ID" + age + ".png");
+        Image scaled = icon.getImage().getScaledInstance(dialog.getWidth(), dialog.getHeight(), Image.SCALE_SMOOTH);
+        JLabel show = new  JLabel(new ImageIcon(scaled));
+        show.setOpaque(false);
+        notSell = new Rectangle(445, 642, 225, 75);
+        sell = new Rectangle(785, 640, 207, 75);
+        show.addMouseListener(this);
+        dialog.add(show);
+        dialog.setVisible(true);
     }
+    
     public void showCoupon() {
-         JDialog dialog = new JDialog(game);
-         JLabel show = new JLabel(new ImageIcon("Coupon" + discount + ".png"));
-         
+        dialog = new JDialog(game, true);
+        dialog.setSize(game.getWidth() - 100, game.getHeight() - 100);
+        dialog.setLocationRelativeTo(game);
+        dialog.setUndecorated(true);
+        ImageIcon icon = new ImageIcon("CustomerImage/Coupon" + discount + ".png");
+        Image scaled = icon.getImage().getScaledInstance(dialog.getWidth(), dialog.getHeight(), Image.SCALE_SMOOTH);
+        JLabel show = new  JLabel(new ImageIcon(scaled));
+        show.setOpaque(false);
+        closeCoupon = new Rectangle(600, 622, 205, 75);
+        show.addMouseListener(this);
+        dialog.add(show);
+        dialog.setVisible(true);
     }
     
     //Setter&Getter
@@ -135,6 +147,30 @@ public class Customer implements Obserable, Runnable, MouseListener {
     }
     public int getCountWrong() {
         return countWrong;
+    }
+    public int getTargetX() {
+        return targetX;
+    }
+    public int getX() {
+        return x;
+    }
+    public int getAge() {
+        return age;
+    }
+    public int getAmountToBuy() {
+        return amountToBuy;
+    }
+    public ArrayList<Goods> getGoodsToBuy() {
+        return goodsToBuy;
+    }
+    public String getimagePath() {
+        return imagePath;
+    }
+    public boolean haveAlcohol() {
+        return haveAlcohol;
+    }
+    public boolean haveCoupon() {
+        return haveCoupon;
     }
     //
     
@@ -156,13 +192,24 @@ public class Customer implements Obserable, Runnable, MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-//        if (ae.getSource().equals(ID_Card)) {
-//            this.showID_Card();
-//        }else if (ae.getSource().equals(Coupon)) {
-//            this.showCoupon();
-//        }
-//        ปุ่มไม่ขายเหล้าให้
-                
+        System.out.println(e.getX() + " " + e.getY());
+        if (notSell != null && notSell.contains(e.getPoint())) {
+            if (age > 20) {
+                this.notifyObserver("wrong");
+            }else {
+                this.notifyObserver("correct");
+            }
+            dialog.dispose();
+        }else if (sell != null && sell.contains(e.getPoint())) {
+            if (age < 20) {
+                this.notifyObserver("wrong");
+            }else {
+                this.notifyObserver("correct");
+            }
+            dialog.dispose();
+        }else if (closeCoupon != null && closeCoupon.contains(e.getPoint())) {
+            dialog.dispose();
+        }
     }
     @Override public void mousePressed(MouseEvent e) {}
     @Override public void mouseReleased(MouseEvent e) {}
