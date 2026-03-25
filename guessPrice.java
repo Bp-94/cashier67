@@ -4,36 +4,36 @@ import java.util.*;
 import java.util.List;
 import javax.swing.*;
 
-public class guessGoods extends Minigame implements ActionListener {
+public class guessPrice extends Minigame implements ActionListener {
     private JDialog dialog;
     private JLayeredPane layerP;
     private JPanel choicePanel;
     private JButton[] btn;
-    private JLabel bgImg, productImg, titleImg;
+    private JLabel bgImg, goodsImg, tImg;
     private DrawPanel canvas;
 
     private int currentImgindex = 0;
     private int score = 0;
-    private final int product_size = 200;
+    private int goods_size = 200;
 
     private Map<String, String> gameData;
     private List<String> imgKeys;
     private String[][] choice;
 
-    public guessGoods(){
+    public guessPrice(){
         this.isPass = false;
 
         gameData = new HashMap<>();
-        gameData.put("ImageMinigame/เงากล้วย.PNG", "ImageMinigame/ช้อยกล้วย.PNG");
-        gameData.put("ImageMinigame/เงาขนมช็อคโกแลต.PNG", "ImageMinigame/ช้อยช็อกโกแลต.PNG");
-        gameData.put("ImageMinigame/เงาขนมป้อกกี้.PNG", "ImageMinigame/ช้อยป้อกกี้.PNG");
-        gameData.put("ImageMinigame/เงาขนมเยลลี่.PNG", "ImageMinigame/ช้อยเยลลี่.PNG");
-        gameData.put("ImageMinigame/เงาขวดน้ำ.PNG", "ImageMinigame/ช้อยน้ำเปล่า.PNG");
-        gameData.put("ImageMinigame/เงาไข่.PNG", "ImageMinigame/ช้อยไข่ไก่.PNG");
-        gameData.put("ImageMinigame/เงาฟิกเกอร์จารแบงค์.PNG", "ImageMinigame/ช้อยฟิกเกอร์จารย์แบงค์.PNG");
-        gameData.put("ImageMinigame/เงาส้ม.PNG", "ImageMinigame/ช้อยส้ม.PNG");
-        gameData.put("ImageMinigame/เงาเหล้า.PNG", "ImageMinigame/ช้อยเหล้า.PNG");
-        gameData.put("ImageMinigame/เงาแอปเปิล.PNG", "ImageMinigame/ช้อยแอปเปิล.PNG");
+        gameData.put("ImageMinigame/กล้วย.PNG", "ImageMinigame/ช้อยเลข44.PNG");
+        gameData.put("ImageMinigame/ขนมช็อคโกแลต.PNG", "ImageMinigame/ช้อยเลข20.PNG");
+        gameData.put("ImageMinigame/ขนมป้อกกี้.PNG", "ImageMinigame/ช้อยเลข25.PNG");
+        gameData.put("ImageMinigame/ขนมเยลลี่.PNG", "ImageMinigame/ช้อยเลข35.PNG");
+        gameData.put("ImageMinigame/น้ำเปล่า.PNG", "ImageMinigame/ช้อยเลข50.PNG");
+        gameData.put("ImageMinigame/ไข่.PNG", "ImageMinigame/ช้อยเลข60.PNG");
+        gameData.put("ImageMinigame/ฟิกเกอร์จารแบงค์.PNG", "ImageMinigame/ช้อยเลข670.PNG");
+        gameData.put("ImageMinigame/ส้ม.PNG", "ImageMinigame/ช้อยเลข46.PNG");
+        gameData.put("ImageMinigame/เหล้า.PNG", "ImageMinigame/ช้อยเลข120.PNG");
+        gameData.put("ImageMinigame/แอปเปิล.PNG", "ImageMinigame/ช้อยเลข49.PNG");
 
         imgKeys = new ArrayList<>(gameData.keySet());
         Collections.shuffle(imgKeys);
@@ -44,27 +44,26 @@ public class guessGoods extends Minigame implements ActionListener {
     private class DrawPanel extends JPanel {
         public DrawPanel(){
             setOpaque(false);
-        }    
+        }
         @Override
         protected void paintComponent(Graphics g){
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            
-            java.net.URL titleURL = getClass().getResource("ImageMinigame/ป้ายหัวข้อ3.PNG");
+
+            java.net.URL titleURL = getClass().getResource("ImageMinigame/ป้ายหัวข้อ1.PNG");
             if (titleURL != null) {
-                Image titleImg = new ImageIcon(titleURL).getImage();
-                g2.drawImage(titleImg, (getWidth() - 250) / 2, 100, 250, 120, this);
+                Image tImage = new ImageIcon(titleURL).getImage();
+                g2.drawImage(tImage, (getWidth() - 250) / 2, 100, 250, 120, this);
             }
-            
             if (!imgKeys.isEmpty()) {
                 String currentPath = imgKeys.get(currentImgindex);
                 java.net.URL productURL = getClass().getResource("/" + currentPath);
             
                 if (productURL != null) {
                     Image pImg = new ImageIcon(productURL).getImage();
-                    g2.drawImage(pImg, (getWidth() - product_size) / 2, 210, product_size, product_size, this);
+                    g2.drawImage(pImg, (getWidth() - goods_size) / 2, 210, goods_size, goods_size, this);
                 }
             }
         }
@@ -80,14 +79,12 @@ public class guessGoods extends Minigame implements ActionListener {
         int w = icon.getIconWidth();
         int h = icon.getIconHeight();
 
-        // Background
         bgImg = new JLabel(icon);
         bgImg.setBounds(0, 0, w, h);
-        
+
         canvas = new DrawPanel();
         canvas.setBounds(0, 0, w, h);
 
-        // Choice Panel
         choicePanel = new JPanel();
         choicePanel.setLayout(null);
         choicePanel.setOpaque(false);
@@ -113,10 +110,8 @@ public class guessGoods extends Minigame implements ActionListener {
             btn[i].addActionListener(this);
             choicePanel.add(btn[i]);
         }
-
         updateChoice();
 
-        // Layered Pane
         layerP = new JLayeredPane();
         layerP.setPreferredSize(new Dimension(w, h));
 
@@ -132,7 +127,7 @@ public class guessGoods extends Minigame implements ActionListener {
     }
 
     private ImageIcon getScaledImgIcon(String path, int w, int h){
-       java.net.URL imgURL = getClass().getResource("/" + path);
+        java.net.URL imgURL = getClass().getResource("/" + path);
         if (imgURL != null) {
             Image img = new ImageIcon(imgURL).getImage();
             return new ImageIcon(img.getScaledInstance(w, h, Image.SCALE_SMOOTH));
@@ -179,7 +174,7 @@ public class guessGoods extends Minigame implements ActionListener {
             score++;
         }
 
-        if(score >= 3){
+        if(score >= 5){
             this.isPass = true;
             dialog.dispose();
         } else {
@@ -201,7 +196,7 @@ public class guessGoods extends Minigame implements ActionListener {
     }
 
     // public static void main(String[] args) {
-    //     guessGoods g = new guessGoods();
+    //     guessPrice g = new guessPrice();
     //     g.play();
     // }
 }
