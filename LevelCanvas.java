@@ -65,7 +65,7 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     Rectangle ansRect = new Rectangle(967,620,345,42);
     Rectangle clearBtn = new Rectangle(1261,180,28,30);
 
-    Rectangle customerRect = new Rectangle(-50, -13, 950, 1250);
+    Rectangle customerRect = new Rectangle(0, -13, 950, 1250);
     
     Rectangle goodsListRect = new Rectangle(1050,715,335,400);
 
