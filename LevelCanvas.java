@@ -9,12 +9,14 @@ import javax.swing.*;
 import javax.swing.text.*;
 public class LevelCanvas extends JPanel implements MouseListener,ActionListener, MouseMotionListener, Obserable {
     private Font customFont;
+    private MyTimer timerLogic;
 
     private List<Observer> observers = new ArrayList<>();
 
     Image bg = new ImageIcon("Asset/bg.png").getImage();
     Image table_calculator_goodslist = new ImageIcon("Asset/Calculator_Table_ListGoods.png").getImage();
     Image CustomerBank = new ImageIcon("Asset/CustomerBank.png").getImage();
+    // Image goodsList = new ImageIcon("Asset/ListGoods.png");
 
     private static JTextField txt = new JTextField();
     private static JTextField txtAns =  new JTextField();
@@ -54,9 +56,22 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     Rectangle txtRect = new Rectangle(1051,175,202,40);
     Rectangle ansRect = new Rectangle(967,620,345,42);
     Rectangle clearBtn = new Rectangle(1261,180,28,30);
+
     Rectangle customerRect = new Rectangle(200, 200, 450, 700);
     
+    Rectangle goodsListRect = new Rectangle(1050,715,335,400);
+
     public LevelCanvas(Game game) {
+        timerLogic = new MyTimer(5);
+
+        // 2. สร้าง Thread แยกเพื่อให้นาฬิกาวิ่งเลนขนาน (หน้าจอจะได้ไม่ค้าง)
+        Thread t = new Thread(timerLogic);
+        t.start();
+
+        // 3. สร้าง Timer ตัวเล็กๆ เพื่อสั่งให้หน้าจอ "วาดใหม่" (Repaint) ทุกๆ 0.1 วินาที
+        // เพื่อให้เลขนาฬิกาที่อัปเดตใน Thread โชว์บนหน้าจอทันที
+        Timer refresh = new Timer(100, e -> repaint());
+        refresh.start();
         debt =  game.getDept();
         try {
             customFont = Font.createFont(Font.TRUETYPE_FONT, new File("2005_iannnnnJPG.ttf"));
@@ -107,14 +122,6 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
 
         
         
-        txtAns.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                currentFocus = txtAns; // ถ้าคลิกช่องส่งคำตอบ ให้พิมพ์ลงช่องนี้
-                
-            }
-        });
-        
-        
         
         
         
@@ -125,22 +132,55 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
             public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
             throws BadLocationException {
                 
-                        String current = fb.getDocument().getText(0, fb.getDocument().getLength());
-                        String newText = current.substring(0, offset) + text + current.substring(offset + length);
-                        
-                        if (newText.matches("\\d*")) { // อนุญาตเฉพาะตัวเลข และว่างได้
-                            super.replace(fb, offset, length, text, attrs);
-                        }
-                    }
-                });
+                String current = fb.getDocument().getText(0, fb.getDocument().getLength());
+                String newText = current.substring(0, offset) + text + current.substring(offset + length);
+                
+                if (newText.matches("\\d*")) { // อนุญาตเฉพาะตัวเลข และว่างได้
+                    super.replace(fb, offset, length, text, attrs);
+                }
             }
+        });
+        txtAns.addMouseListener(new MouseAdapter() {
+                        public void mouseClicked(MouseEvent e) {
+                            currentFocus = txtAns; // ถ้าคลิกช่องส่งคำตอบ ให้พิมพ์ลงช่องนี้
+                            
+                        }
+                    });
+            }
+
+    public void showCouponDialog() {
+                JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), true);
+                Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+                dialog.setSize(screen);
+                dialog.setUndecorated(true);
+                dialog.setBackground(new Color(0,0,0,50));
+                int w = (int)(screen.width * 0.5);
+                int h = (int)(w * 9.0 / 16);
+
+                Image img = new ImageIcon("Asset/ListGoods.png").getImage();
+                Image scaled = img.getScaledInstance(screen.width, screen.height, Image.SCALE_SMOOTH);
+                JLabel label = new JLabel(new ImageIcon(scaled));
+                dialog.add(label);
+                dialog.setLocationRelativeTo(null);
+                MouseAdapter closeEvent = new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    dialog.dispose();
+                    }
+                };
+
+                dialog.addMouseListener(closeEvent);
+                label.addMouseListener(closeEvent);
+                dialog.setVisible(true);
+                
+
+            }
+                
+            // public static void main(String[] args){
+                
+            //     JFrame frame = new JFrame("CASHIER");
+            //     Font myFont = new Font("Serif", Font.PLAIN, 20);
             
-    // public static void main(String[] args){
-        
-    //     JFrame frame = new JFrame("CASHIER");
-    //     Font myFont = new Font("Serif", Font.PLAIN, 20);
-        
-    //     frame.setSize(1920,1080);
+            //     frame.setSize(1920,1080);
     //     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
     //     Calculator panel = new Calculator(new Game());
@@ -202,27 +242,43 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
         Rectangle r = scale(customerRect);
+        // Rectangle gl = scale(goodsListRect);
         int debtx = 500;
         int debty = 55;
+
+        int timex = 1000;
+        int timey = 55;
 
         double scaleX = getWidth()/(double)baseWidth;
         double scaleY = getHeight() / (double)baseHeight;
         
         double scaledebt = Math.min(scaleX, scaleY);
 
-        int x = (int)(debtx * scaleX);
-        int y = (int)(debty * scaleY);
-
+        int dx = (int)(debtx * scaleX);
+        int dy = (int)(debty * scaleY);
+        
+        int tx = (int)(timex * scaleX);
+        int ty = (int)(timey * scaleY);
         
         Graphics2D g2 = (Graphics2D) g;
         
         g2.drawImage(bg,0,0,getWidth(),getHeight(),this);
         g2.drawImage(CustomerBank, r.x, r.y, r.width, r.height, this);
         g2.drawImage(table_calculator_goodslist,0,0,getWidth(),getHeight(),this);
+
+        String timeToShow = timerLogic.getTimeString();
+
+        // ตั้งค่าฟอนต์และสีที่จะวาดเลขนาฬิกา
+        g.setFont(customFont);
+        g.setColor(Color.WHITE);
+        
+        // วาดลงบนหน้าจอ (ตำแหน่ง x=80, y=100)
+        g.drawString(timeToShow, tx, ty);
+
         g2.setFont(customFont.deriveFont((float)(68 * scaledebt)) );
         g2.setColor(Color.WHITE);
         
-        g2.drawString(String.valueOf(debt), x, y);
+        g2.drawString(String.valueOf(debt), dx, dy);
         g2.setColor(Color.RED);
         
         g2.draw(scale(btn7));
@@ -246,7 +302,7 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         g2.draw(scale(btnAdd));
         g2.draw(scale(btnAns));
         g2.draw(scale(clearBtn));
-        
+        g2.draw(scale(goodsListRect));
     }
     
     public static double calculate(String exp){
@@ -322,11 +378,14 @@ public void mouseClicked(MouseEvent e){
                 int floorAns = (int)Math.floor(ans); // ปัดลงเสมอ
                 currentFocus.setText(String.valueOf(floorAns));
             } else if (btnAns.contains(x, y)) {
-                
                 this.notifyObserver(txtAns.getText()); // ส่งคำตอบไปให้ Game ตรวจสอบ
             } else if (btnDot.contains(x, y)) {
                 currentFocus.setText(currentFocus.getText()+".");
+            } else if (goodsListRect.contains(x,y)){
+                showCouponDialog();
             }
+            
+
         }
         
         public void mouseReleased(MouseEvent e){}

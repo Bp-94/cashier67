@@ -13,7 +13,7 @@ public class Game extends JFrame implements Observer {
 
     private int level;
 
-    private double dept = 150;
+    private double dept = 1200;
 
     public static final Goods goodsList[] = {
         new Goods("Alcohol",120),
@@ -110,13 +110,21 @@ public class Game extends JFrame implements Observer {
         if (message.equals("CustomerLeft")) {
             presentCustomer = new Customer(this);
         }
+        else if (message.equals("correct")){
+
+        }
         try {
             double playerInput = Double.parseDouble(message);
+            // if (presentCustomer.getAge() < 20){
+                
+            // }
             if (presentCustomer.checkPrice(playerInput)) {
                 this.setDept(this.getDept() + presentCustomer.getPayment());
                 presentCustomer.leave();
+
             }
         }catch (NumberFormatException e) {}
+
     }
     // public static void main(String[] args){
     //     Game currentGame = new Game();
