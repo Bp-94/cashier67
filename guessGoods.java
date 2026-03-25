@@ -1,4 +1,3 @@
-
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -8,112 +7,152 @@ import javax.swing.*;
 public class guessGoods extends Minigame implements ActionListener {
     private JDialog dialog;
     private JLayeredPane layerP;
-    private JPanel panel, choicePanel;
+    private JPanel choicePanel;
     private JButton[] btn;
-    private JLabel bgImg, productImg;
+    private JLabel bgImg, productImg, titleImg;
+    private DrawPanel canvas;
+
     private int currentImgindex = 0;
     private int score = 0;
+    private final int product_size = 200;
 
     private Map<String, String> gameData;
     private List<String> imgKeys;
     private String[][] choice;
 
     public guessGoods(){
-        this.isFinish = false;
         this.isPass = false;
 
-        gameData = new HashMap<String, String>();
-        gameData.put("ImageMinigame/เงากล้วย.PNG", "Banana");
-        gameData.put("ImageMinigame/เงาขนมช็อคโกแลต.PNG", "Chocolate");
-        gameData.put("ImageMinigame/เงาขนมป้อกกี้.PNG", "ขนมป็อกกี้");
-        gameData.put("ImageMinigame/เงาขนมเยลลี่.PNG", "Jelly");
-        gameData.put("ImageMinigame/เงาขวดน้ำ.PNG", "Water");
-        gameData.put("ImageMinigame/เงาไข่.PNG", "Egg");
-        gameData.put("ImageMinigame/เงาฟิกเกอร์จารแบงค์.PNG", "ฟิกเกอร์อาจารย์เเบงค์");
-        gameData.put("ImageMinigame/เงาส้ม.PNG", "Orange");
-        gameData.put("ImageMinigame/เงาเหล้า.PNG", "Alcohol");
-        gameData.put("ImageMinigame/เงาแอปเปิล.PNG", "Apple");
+        gameData = new HashMap<>();
+        gameData.put("ImageMinigame/เงากล้วย.PNG", "ImageMinigame/ช้อยกล้วย.PNG");
+        gameData.put("ImageMinigame/เงาขนมช็อคโกแลต.PNG", "ImageMinigame/ช้อยช็อกโกแลต.PNG");
+        gameData.put("ImageMinigame/เงาขนมป้อกกี้.PNG", "ImageMinigame/ช้อยป้อกกี้.PNG");
+        gameData.put("ImageMinigame/เงาขนมเยลลี่.PNG", "ImageMinigame/ช้อยเยลลี่.PNG");
+        gameData.put("ImageMinigame/เงาขวดน้ำ.PNG", "ImageMinigame/ช้อยน้ำเปล่า.PNG");
+        gameData.put("ImageMinigame/เงาไข่.PNG", "ImageMinigame/ช้อยไข่ไก่.PNG");
+        gameData.put("ImageMinigame/เงาฟิกเกอร์จารแบงค์.PNG", "ImageMinigame/ช้อยฟิกเกอร์จารย์แบงค์.PNG");
+        gameData.put("ImageMinigame/เงาส้ม.PNG", "ImageMinigame/ช้อยส้ม.PNG");
+        gameData.put("ImageMinigame/เงาเหล้า.PNG", "ImageMinigame/ช้อยเหล้า.PNG");
+        gameData.put("ImageMinigame/เงาแอปเปิล.PNG", "ImageMinigame/ช้อยแอปเปิล.PNG");
 
         imgKeys = new ArrayList<>(gameData.keySet());
         Collections.shuffle(imgKeys);
 
         createChoice();
     }
+
+    private class DrawPanel extends JPanel {
+            public DrawPanel(){
+                setOpaque(false);
+            }    
+            @Override
+        protected void paintComponent(Graphics g){
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            
+            java.net.URL titleURL = getClass().getResource("ImageMinigame/ป้ายหัวข้อ3.PNG");
+            if (titleURL != null) {
+                Image titleImg = new ImageIcon(titleURL).getImage();
+                g2.drawImage(titleImg, (getWidth() - 250) / 2, 100, 250, 120, this);
+            }
+            
+            if (!imgKeys.isEmpty()) {
+                String currentPath = imgKeys.get(currentImgindex);
+                java.net.URL productURL = getClass().getResource("/" + currentPath);
+            
+                if (productURL != null) {
+                    Image pImg = new ImageIcon(productURL).getImage();
+                    g2.drawImage(pImg, (getWidth() - product_size) / 2, 210, product_size, product_size, this);
+                }
+            }
+        }
+    }
+
     @Override
     public void play(){
         dialog = new JDialog();
         dialog.setUndecorated(true);
-        dialog.setModal(true); //ล็อคหน้าต่างหลัก
+        dialog.setModal(true);
 
-        ImageIcon icon = new ImageIcon("ImageMinigame/หน้าต่างมินิเกม.png");
+        ImageIcon icon = new ImageIcon(getClass().getResource("ImageMinigame/หน้าต่างมินิเกม.png"));
         int w = icon.getIconWidth();
         int h = icon.getIconHeight();
 
+        // Background
         bgImg = new JLabel(icon);
         bgImg.setBounds(0, 0, w, h);
+        
+        canvas = new DrawPanel();
+        canvas.setBounds(0, 0, w, h);
 
-        int imgSize = 250;
-        ImageIcon pImg = getScaledImgIcon(imgKeys.get(currentImgindex), imgSize, imgSize);
-        productImg = new JLabel(pImg);
-
+        // Choice Panel
         choicePanel = new JPanel();
-        choicePanel.setOpaque(false); //ให้ปุ่มไม่บังพท้นหลัง
-        choicePanel.setLayout(new GridLayout(2,2, 7, 7)); //ระยะห่างปุ่ม 2row 2col
+        choicePanel.setLayout(null);
+        choicePanel.setOpaque(false);
+        choicePanel.setBounds(0, 0, w, h);
 
         btn = new JButton[4];
+
+        int btnW = 200;
+        int btnH = 70;
+        int gap = 30;
+        int startX = (w - (btnW * 2 + gap)) / 2;
+        int startY = 430;
+
         for(int i = 0; i < 4; i++){
             btn[i] = new JButton();
+            btn[i].setContentAreaFilled(false);
+            btn[i].setBorderPainted(false);
+            btn[i].setFocusPainted(false);
+            btn[i].setOpaque(false);
+            
+            int row = i / 2, col = i % 2;
+            btn[i].setBounds(startX + col * (btnW + gap), startY + row * (btnH + gap), btnW, btnH);
             btn[i].addActionListener(this);
             choicePanel.add(btn[i]);
         }
+
         updateChoice();
 
-        panel = new JPanel();
-        panel.setOpaque(false);
-        panel.setLayout(new BorderLayout(0,20));
-        panel.add(productImg, BorderLayout.CENTER);
-        panel.add(choicePanel, BorderLayout.SOUTH);
-        int panelW = (int)(w * 0.5);
-        int panelH = (int)(h * 0.5);
-        int panelX = (w - panelW) / 2;
-        int panelY = (int)(h * 0.2); //จากบอบบน
-        panel.setBounds(panelX, panelY, panelW, panelH); //ให้อยู่ในกรอบรูป
-
+        // Layered Pane
         layerP = new JLayeredPane();
-        layerP.add(bgImg, JLayeredPane.DEFAULT_LAYER);
-        layerP.add(panel, JLayeredPane.PALETTE_LAYER);
+        layerP.setPreferredSize(new Dimension(w, h));
 
-        dialog.setSize(w, h);
+        layerP.add(bgImg, JLayeredPane.DEFAULT_LAYER); //ชั้น0
+        layerP.add(canvas, JLayeredPane.PALETTE_LAYER); //ชั้น1
+        layerP.add(choicePanel, JLayeredPane.MODAL_LAYER);
+
+        dialog.add(layerP);
+        dialog.pack();
         dialog.setLocationRelativeTo(null);
         dialog.setBackground(new Color(0,0,0,0));
-        dialog.add(layerP);
         dialog.setVisible(true);
     }
 
     private ImageIcon getScaledImgIcon(String path, int w, int h){
-        ImageIcon icon = new ImageIcon(path);
-
-        if(icon.getIconWidth() <= 0){
-            return icon;
+       java.net.URL imgURL = getClass().getResource("/" + path);
+        if (imgURL != null) {
+            Image img = new ImageIcon(imgURL).getImage();
+            return new ImageIcon(img.getScaledInstance(w, h, Image.SCALE_SMOOTH));
         }
-        Image img = icon.getImage();
-        Image scalesImg = img.getScaledInstance(w, h, Image.SCALE_SMOOTH);
-        return new ImageIcon(scalesImg);
+        return null;
     }
 
     private void createChoice(){
         choice = new String[imgKeys.size()][4];
-        String [] allAnswer = {"Banana", "Chocolate", "ขนมป็อกกี้", "Jelly", "Water", "Egg",
-                    "ฟิกเกอร์อาจารย์แบงค์", "Orange", "Aocohol", "Apple"};
+        List<String> allAns = new ArrayList<>(gameData.values());
 
         for(int i = 0; i < imgKeys.size(); i++){
             String correctAns = gameData.get(imgKeys.get(i));
             List<String> option = new ArrayList<>();
             option.add(correctAns);
 
-            List<String> wrongAns = new ArrayList<>(Arrays.asList(allAnswer));
+            List<String> wrongAns = new ArrayList<>(allAns);
             wrongAns.remove(correctAns);
             Collections.shuffle(wrongAns);
+
             option.add(wrongAns.get(0));
             option.add(wrongAns.get(1));
             option.add(wrongAns.get(2));
@@ -122,53 +161,28 @@ public class guessGoods extends Minigame implements ActionListener {
             choice[i] = option.toArray(new String[0]);
         }
     }
+
     private void updateChoice(){
         for(int i = 0; i < 4; i++){
-            btn[i].setText(choice[currentImgindex][i]);
+            String path = choice[currentImgindex][i];
+            btn[i].setIcon(getScaledImgIcon(path, 200, 60));
+            btn[i].setActionCommand(path);
         }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        for(int i = 0; i < btn.length; i++){
-            if(e.getSource() == btn[i]){
-                String selectAns = btn[i].getText();
-                String correctAns = gameData.get(imgKeys.get(currentImgindex));
+        String selectedAns = e.getActionCommand();
+        String correctAns = gameData.get(imgKeys.get(currentImgindex));
 
-                if(selectAns.equals(correctAns)){
-                    score++;
-                }
-                checkWincondition();
-                break;
-            //     if(score >= 5){
-            //         this.isPass = true;
-            //         this.isFinish = true;
-            //         dialog.dispose();
-            //     }else{
-            //         currentImgindex++;
-
-            //         if(currentImgindex >= imgKeys.size()){
-            //             currentImgindex = 0;
-            //             Collections.shuffle(imgKeys);
-            //             createChoice();
-            //         }
-            //         int imgSize = 250;
-            //         ImageIcon pImg = getScaledImgIcon(imgKeys.get(currentImgindex), imgSize, imgSize);
-            //         productImg.setIcon(pImg);
-            //         updateChoice();
-            //     }
-            // }
-            }
+        if(selectedAns.equals(correctAns)){
+            score++;
         }
-    }
 
-    @Override
-    public boolean checkWincondition() {
         if(score >= 5){
             this.isPass = true;
-            this.isFinish = true;
             dialog.dispose();
-        }else{
+        } else {
             currentImgindex++;
 
             if(currentImgindex >= imgKeys.size()){
@@ -176,12 +190,14 @@ public class guessGoods extends Minigame implements ActionListener {
                 Collections.shuffle(imgKeys);
                 createChoice();
             }
-            int imgSize = 250;
-            ImageIcon pImg = getScaledImgIcon(imgKeys.get(currentImgindex), imgSize, imgSize);
-            productImg.setIcon(pImg);
             updateChoice();
+            canvas.repaint();
         }
-        return isPass;
+    }
+
+    @Override
+    public boolean checkWincondition() {
+        return this.isPass;
     }
 
     public static void main(String[] args) {
