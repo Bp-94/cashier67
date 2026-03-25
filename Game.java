@@ -6,14 +6,15 @@ public class Game extends JFrame implements Observer {
 
     private Font customFont;
 
-    private Customer currentcustomer;
-    private Customer presentCustomer;
+
+
+    private Customer presentCustomer,leavingCustomer;
 
     private LevelCanvas levelCanvas;
 
     private int level;
 
-    private double dept = 1200;
+    private double dept ;
 
     public static final Goods goodsList[] = {
         new Goods("Alcohol", "Goods/เหล้า.png",120),
@@ -28,6 +29,7 @@ public class Game extends JFrame implements Observer {
         
     };
     public Game(){
+        dept = 1200;
         presentCustomer = new Customer(this);
         JLabel BackGround,Customer,TableAndCalculator,PresentLevel;
         
@@ -36,6 +38,7 @@ public class Game extends JFrame implements Observer {
         setLayout(new BorderLayout());
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         levelCanvas = new LevelCanvas(this);
+        levelCanvas.setCurrentCustomer(presentCustomer);
         levelCanvas.setBounds(0,0,1920,1080);
         // Customer = new JLabel(new ImageIcon("Assets/CustomerBank.png"));
         // customer.setBounds(0,0,192)
@@ -110,7 +113,18 @@ public class Game extends JFrame implements Observer {
     @Override
     public void update(String message) {
         if (message.equals("CustomerLeft")) {
-            presentCustomer = new Customer(this);
+
+            
+            Customer newCustomer = new Customer(this);
+
+        // บอก Canvas ว่าคนเก่าคือ leaving
+            levelCanvas.setLeavingCustomer(presentCustomer);
+
+            // เปลี่ยน current
+            presentCustomer = newCustomer;
+
+            // ส่งให้ canvas
+            levelCanvas.setCurrentCustomer(presentCustomer);
         }
         else if (message.equals("correct")){
 
@@ -123,13 +137,20 @@ public class Game extends JFrame implements Observer {
             if (presentCustomer.getX() == presentCustomer.getTargetX()){
 
                 if (presentCustomer.checkPrice(playerInput)) {
-                    this.setDept(this.getDept() + presentCustomer.getPayment());
+                    this.setDept(this.getDept() - presentCustomer.getPayment());
+                    leavingCustomer = presentCustomer;
                     presentCustomer.leave();
     
                 }
+                else{
+                    levelCanvas.repaint();
+                }
             }
         }catch (NumberFormatException e) {}
-
+        
+    }
+    public Customer getLeavingCustomer(){
+        return leavingCustomer;
     }
     // public static void main(String[] args){
     //     Game currentGame = new Game();

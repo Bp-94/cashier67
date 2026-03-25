@@ -10,19 +10,27 @@ import javax.swing.text.*;
 public class LevelCanvas extends JPanel implements MouseListener,ActionListener, MouseMotionListener, Obserable {
     private Font customFont;
     private MyTimer timerLogic;
-
+    private AnimationLevel AnLe;
     private List<Observer> observers = new ArrayList<>();
-
+    private int currentY;
+    private float Prongsai;
     Image bg = new ImageIcon("Asset/bg.png").getImage();
     Image table_calculator_goodslist = new ImageIcon("Asset/Calculator_Table_ListGoods.png").getImage();
     Image CustomerBank = new ImageIcon("Asset/CustomerBank.png").getImage();
+    Image Level1ICon = new ImageIcon("Asset/Level1.png").getImage();
+    Image Wrong1 = new ImageIcon("CustomerImage/สงสัย.png").getImage();
+    Image Wrong2 = new ImageIcon("CustomerImage/ตกใจ.png").getImage();
     Image presentcustomerImg;
     // Image goodsList = new ImageIcon("Asset/ListGoods.png");
 
     private static JTextField txt = new JTextField();
     private static JTextField txtAns =  new JTextField();
     private JTextField currentFocus;
-    private Customer presentcustomer;
+    private Customer currentCustomer;
+    private Customer leavingCustomer;
+
+    private int CountWrong;
+
     public Observer Game;
     int mouseX;
     int mouseY;
@@ -30,8 +38,7 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     int baseWidth = 1537;
     int baseHeight = 795;
     
-    private double debt;
-
+    private Game game;
     
 
     Rectangle btn7 = new Rectangle(1063,302,50,45);
@@ -58,28 +65,35 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     Rectangle ansRect = new Rectangle(967,620,345,42);
     Rectangle clearBtn = new Rectangle(1261,180,28,30);
 
-    Rectangle customerRect = new Rectangle(0, 0, 950, 1250);
+    Rectangle customerRect = new Rectangle(-50, -13, 950, 1250);
     
     Rectangle goodsListRect = new Rectangle(1050,715,335,400);
 
     Rectangle goodRect = new Rectangle(206,550,150,150);
 
+    Rectangle IconLevel1 = new Rectangle(80,50,1400,900);
+
+    Rectangle wrongRect = new Rectangle(350,80,1200,1050); 
+
     public LevelCanvas(Game game) {
-        timerLogic = new MyTimer(5);
-        presentcustomer = game.getCustomer();
-        presentcustomerImg = new ImageIcon(presentcustomer.getimagePath()).getImage();
+        timerLogic = new MyTimer(150);
+        // presentcustomer = game.getCustomer();
+        // presentcustomerImg = new ImageIcon(presentcustomer.getimagePath()).getImage();
         // 2. สร้าง Thread แยกเพื่อให้นาฬิกาวิ่งเลนขนาน (หน้าจอจะได้ไม่ค้าง)
         Thread t = new Thread(timerLogic);
         t.start();
-
+        this.game = game;
         // 3. สร้าง Timer ตัวเล็กๆ เพื่อสั่งให้หน้าจอ "วาดใหม่" (Repaint) ทุกๆ 0.1 วินาที
         // เพื่อให้เลขนาฬิกาที่อัปเดตใน Thread โชว์บนหน้าจอทันที
         Timer refresh = new Timer(16, e -> repaint());
         refresh.start();
-        debt =  game.getDept();
+        AnLe = new AnimationLevel(this);
+        Thread AL = new Thread(AnLe);
+        AL.start();
+        
         try {
             customFont = Font.createFont(Font.TRUETYPE_FONT, new File("2005_iannnnnJPG.ttf"));
-            customFont = customFont.deriveFont(68f);
+            customFont = customFont.deriveFont(54f);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -151,7 +165,19 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
                         }
                     });
             }
+    public void updateState(int currentY,float Prongsai){
+        this.currentY = currentY;
+        this.Prongsai = Prongsai;
+        repaint();
+    }
+    public void setCurrentCustomer(Customer c) {
+        this.currentCustomer = c;
+        this.presentcustomerImg = new ImageIcon(c.getimagePath()).getImage();
+    }
 
+    public void setLeavingCustomer(Customer c) {
+        this.leavingCustomer = c;
+    }
     public void showCouponDialog() {
                 JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), true);
                 Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
@@ -245,46 +271,79 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     // วาดรูปลง JPanel
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
+        Image pImg = new ImageIcon(game.getCustomer().getimagePath()).getImage();
+        Rectangle w = scale(wrongRect);
         Rectangle r = scale(customerRect);
+        Rectangle LI = scale(IconLevel1);
         Rectangle gd = scale(goodRect);
+
+        if (currentCustomer != null) {
+                CountWrong = currentCustomer.getCountWrong();
+        }
         // Rectangle gl = scale(goodsListRect);
         int debtx = 500;
         int debty = 55;
-
+        
         int timex = 1000;
         int timey = 55;
         
         int goodx = 206;
         int goody = 550;
-
+        
         double scaleX = getWidth()/(double)baseWidth;
         double scaleY = getHeight() / (double)baseHeight;
         
         double scaledebt = Math.min(scaleX, scaleY);
-
+        
         int dx = (int)(debtx * scaleX);
         int dy = (int)(debty * scaleY);
         
         int tx = (int)(timex * scaleX);
         int ty = (int)(timey * scaleY);
-
+        
         int gx = (int)(goodx * scaleX);
         int gy = (int)(goody * scaleY);
         
         Graphics2D g2 = (Graphics2D) g;
+
+        Composite oldComposite = g2.getComposite();
         
         g2.drawImage(bg,0,0,getWidth(),getHeight(),this);
-        g2.drawImage(presentcustomerImg,presentcustomer.getX(),r.y,r.width,r.height,this);
+        // วาดคนที่กำลังออก
+        if (leavingCustomer != null) {
+            Image leaveImg = new ImageIcon(leavingCustomer.getimagePath()).getImage();
+            g2.drawImage(leaveImg, leavingCustomer.getX(), r.y, r.width, r.height, this);
+        }
+
+        // วาดคนปัจจุบัน
+        if (currentCustomer != null) {
+            g2.drawImage(presentcustomerImg, currentCustomer.getX(), r.y, r.width, r.height, this);
+        }
+        AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,Prongsai);
+        
+        g2.setComposite(ac);
+        g2.drawImage(Level1ICon, LI.x,currentY,LI.width,LI.height,this);
+
+        g2.setComposite(oldComposite);
         g2.drawImage(table_calculator_goodslist,0,0,getWidth(),getHeight(),this);
-        if (presentcustomer.getX() == presentcustomer.getTargetX()){
-            for(int i = 0;i < presentcustomer.getAmountToBuy() ; i++){
-                Goods good = presentcustomer.getGoodsToBuy().get(i);
+        if (currentCustomer != null && currentCustomer.getX() == currentCustomer.getTargetX()){
+            for(int i = 0;i < game.getCustomer().getAmountToBuy() ; i++){
+                Goods good = game.getCustomer().getGoodsToBuy().get(i);
                 Image gicon = new ImageIcon(good.getImagePath()).getImage();
                 g2.drawImage(gicon,gx,gy,gd.width,gd.height,this);
                 gx += 75;
             }
         }
 
+        if (CountWrong == 1){
+            g2.drawImage(Wrong1, 0,0,getWidth(),getHeight(), this);
+        }
+        else if(CountWrong == 2){
+            g2.drawImage(Wrong2,0,0,getWidth(),getHeight() , this);
+        }
+        else if(CountWrong == 3){
+            CountWrong = 0;
+        }
         String timeToShow = timerLogic.getTimeString();
 
         // ตั้งค่าฟอนต์และสีที่จะวาดเลขนาฬิกา
@@ -297,7 +356,7 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         g2.setFont(customFont.deriveFont((float)(68 * scaledebt)) );
         g2.setColor(Color.WHITE);
         
-        g2.drawString(String.valueOf(debt), dx, dy);
+        g2.drawString(String.valueOf(game.getDept()), dx, dy);
         g2.setColor(Color.RED);
         
         g2.draw(scale(btn7));
@@ -323,7 +382,8 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         g2.draw(scale(clearBtn));
         g2.draw(scale(goodsListRect));
         g2.draw(scale(goodRect));
-        g2.draw(scale(customerRect));
+        
+        g2.draw(scale(wrongRect));
     }
     
     public static double calculate(String exp){

@@ -59,7 +59,7 @@ public class Customer implements Obserable, Runnable, MouseListener {
     
     @Override
     public void run() {
-        targetX = -100;
+        targetX = -200;
         // เดินเข้า
         while (x < targetX) {
             x += 4;
@@ -80,9 +80,9 @@ public class Customer implements Obserable, Runnable, MouseListener {
         }
         // เดินออก
         while (x < game.getWidth()) {
-            x += 5;
+            x += 4;
             try {
-                Thread.sleep(20);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
