@@ -9,5 +9,4 @@ public abstract class Minigame {
     }
 
     public abstract void play();
-    public abstract boolean checkWincondition();
 }

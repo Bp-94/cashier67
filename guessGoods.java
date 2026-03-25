@@ -177,27 +177,24 @@ public class guessGoods extends Minigame implements ActionListener {
 
         if(selectedAns.equals(correctAns)){
             score++;
-        }
 
-        if(score >= 3){
-            this.isPass = true;
-            dialog.dispose();
-        } else {
-            currentImgindex++;
+            if(score >= 5){
+                this.isPass = true;
+                dialog.dispose();
+            } else {
+                currentImgindex++;
 
-            if(currentImgindex >= imgKeys.size()){
-                currentImgindex = 0;
-                Collections.shuffle(imgKeys);
-                createChoice();
+                if(currentImgindex >= imgKeys.size()){
+                    currentImgindex = 0;
+                    Collections.shuffle(imgKeys);
+                    createChoice();
+                }
+                updateChoice();
+                canvas.repaint();
             }
-            updateChoice();
-            canvas.repaint();
+        }else{
+            dialog.dispose();
         }
-    }
-
-    @Override
-    public boolean checkWincondition() {
-        return this.isPass;
     }
 
     // public static void main(String[] args) {
