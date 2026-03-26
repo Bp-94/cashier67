@@ -243,19 +243,5 @@ class ImagePanel extends JPanel {
         drawY = (panelH - drawH) / 2;
 
         g.drawImage(img, drawX, drawY, drawW, drawH, this);
-
-        // ===== debug hitbox =====
-        // ถ้าไม่อยากเห็นกรอบสี ให้คอมเมนต์ส่วนนี้ทิ้ง
-        Graphics2D g2 = (Graphics2D) g;
-
-        g2.setColor(new Color(0, 255, 0, 90));
-        g2.fill(getRelativeRect(0.06, 0.08, 0.88, 0.84)); // letter area
-
-        g2.setColor(new Color(255, 0, 0, 90));
-        g2.fill(getRelativeRect(0.02, 0.73, 0.18, 0.22)); // prev area
-
-        g2.setColor(new Color(0, 0, 255, 90));
-        g2.fill(getRelativeRect(0.80, 0.73, 0.18, 0.22)); // next/start area
-        
     }
 }
