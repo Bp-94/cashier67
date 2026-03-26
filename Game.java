@@ -3,10 +3,19 @@ import javax.swing.*;
 import java.awt.event.*;
 import javax.swing.event.*;
 public class Game extends JFrame implements Observer {
-
+    private boolean transitioning = false;
     private Font customFont;
 
+    private static final int PLAYING = 0;
+    private static final int WIN = 1;
+    private static final int LOSING = 2;
+    private static final int TRANSITION = 3;
 
+    GameLoop loop;
+
+    private int time;
+
+    private int gameState;
 
     private Customer presentCustomer,leavingCustomer;
 
@@ -14,7 +23,7 @@ public class Game extends JFrame implements Observer {
 
     private int level;
 
-    private double dept ;
+    private double debt;
 
     public static final Goods goodsList[] = {
         new Goods("Alcohol", "Goods/เหล้า.png",120),
@@ -28,11 +37,12 @@ public class Game extends JFrame implements Observer {
         new Goods("egg", "Goods/ไข่.png", 60)
         
     };
-    public Game(){
-        dept = 1200;
+    public Game(double debt,int time,int level){
+        this.debt = debt;
+        this.time = time;
+        this.level = level;
         presentCustomer = new Customer(this);
-        JLabel BackGround,Customer,TableAndCalculator,PresentLevel;
-        
+        gameState = PLAYING;
         setSize(1920,1080);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -58,6 +68,8 @@ public class Game extends JFrame implements Observer {
         // setComponentZOrder(Customer, 3);
        
         // setComponentZOrder(TableAndCalculator, 0);
+        loop = new GameLoop(this);
+        new Thread(loop).start();
         setVisible(true);
         System.out.println(getWidth() + " " + getHeight());
     }
@@ -77,11 +89,11 @@ public class Game extends JFrame implements Observer {
     public Customer getCustomer(){
         return presentCustomer;
     }
-    public void setDept(double dept) {
-        this.dept = dept;
+    public void setdebt(double debt) {
+        this.debt = debt;
     }
-    public double getDept() {
-        return dept;
+    public double getDebt() {
+        return debt;
     }
     public void CaluclulateMoney(){
 
@@ -95,21 +107,7 @@ public class Game extends JFrame implements Observer {
         }
     }
 
-    // เมธอดเช็คว่า จบเกมยังงง
-    public void isGameEnd(int time,int debt,Game currentGame){
-        if (time == 0){
-            boolean result = currentGame.isWinOrLose(debt);
-            if (result){
-                ;
-            }
-            else{
-                System.out.println("return to home");
-            }
-        }
-        else{
-            
-        }
-    }
+    
     @Override
     public void update(String message) {
         if (message.equals("CustomerLeft")) {
@@ -137,7 +135,7 @@ public class Game extends JFrame implements Observer {
             if (presentCustomer.getX() == presentCustomer.getTargetX()){
 
                 if (presentCustomer.checkPrice(playerInput)) {
-                    this.setDept(this.getDept() - presentCustomer.getPayment());
+                    this.setdebt(this.getDebt() - presentCustomer.getPayment());
                     leavingCustomer = presentCustomer;
                     presentCustomer.leave();
     
@@ -149,9 +147,83 @@ public class Game extends JFrame implements Observer {
         }catch (NumberFormatException e) {}
         
     }
+    public void nextLevel() {
+        levelCanvas.getAninmation().stopAnimation();
+        loop.stopLoop();
+        levelCanvas.getTimer().stopTime();
+        dispose();
+        level++;
+
+        debt = 100;
+
+        int time;
+        
+        if (level == 2) time = 140;
+        else if (level == 3) time = 130;
+        else time = 120;
+
+        new Game(100,time,level);
+
+        // gameState = PLAYING;
+
+        // levelCanvas.getTimer().start();
+    }
+    public void updateGame() {
+        if (gameState != PLAYING) return;
+
+        if (levelCanvas.getTimer().getTotalSeconds() == 0) {
+            loseGame();
+        }
+
+        if (debt < 0) {
+            winGame();
+        }
+    }
+    public void winGame() {
+        if (gameState != PLAYING) {
+        return;
+        }
+
+        if (transitioning == true) {
+            return;
+        } else {
+            transitioning = true;
+        }
+
+        gameState = TRANSITION;
+
+        levelCanvas.getTimer().stopTime();
+
+        levelCanvas.showEndDialog(true);
+        nextLevel();
+    }
     public Customer getLeavingCustomer(){
         return leavingCustomer;
     }
+    public int getTime(){
+        return time;
+    }
+
+    public void loseGame() {
+        if (gameState != PLAYING) {
+            return;
+        }
+
+        if (transitioning == true) {
+            return;
+        } else {
+            transitioning = true;
+        }
+
+        gameState = TRANSITION;
+
+        levelCanvas.getTimer().stopTime();
+
+        levelCanvas.showEndDialog(false);
+
+        nextLevel();
+    }
+
     // public static void main(String[] args){
     //     Game currentGame = new Game();
     //     currentGame.isGameEnd(0, 0, currentGame);

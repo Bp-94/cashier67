@@ -4,13 +4,14 @@ public class AnimationLevel implements Runnable {
     private LevelCanvas panel;
     private int currentY;
     private float Prongsai;
+    private boolean running;
     public AnimationLevel(LevelCanvas f) {
         panel = f;
     }
     
     @Override
     public void run() {
-        currentY = -200;
+        currentY = -500;
         Prongsai = 1.0f;
 
         try {
@@ -40,5 +41,7 @@ public class AnimationLevel implements Runnable {
     public float getProngsai(){
         return Prongsai;
     }
-
+    public void stopAnimation(){
+        this.running = false;
+    }
 }

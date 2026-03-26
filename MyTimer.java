@@ -4,7 +4,7 @@ import java.awt.*;
 public class MyTimer implements Runnable {
     private int totalSeconds;
     private boolean running = true;
-    private String timeString;
+    private String timeString = "00:00";
 
     public MyTimer(int time) {
         this.totalSeconds = time; 
@@ -12,33 +12,22 @@ public class MyTimer implements Runnable {
     
     @Override
     public void run() {
-        while (running && totalSeconds >= 0) {
-            try {
-                /*หาค่าตัวแปร */
-                int m = (totalSeconds % 3600) / 60;
-                int s = totalSeconds % 60;
+        while ( totalSeconds >= 0) {
+            if (running) {
+                
+                try {
+                    /*หาค่าตัวแปร */
+                    int m = (totalSeconds % 3600) / 60;
+                    int s = totalSeconds % 60;
 
-                /*จัดรูปแบบสตริง */
-                String hh, mm, ss;
-                if (s < 10) {
-                    ss = "0"+s;
-                } else {
-                    ss = ""+s;
+                        timeString = String.format("%02d:%02d", m, s);
+
+                    /*time update */
+                    Thread.sleep(1000);
+                    totalSeconds--;
+                } catch (InterruptedException ex) {
+                    break;
                 }
-
-                if (m < 10) {
-                    mm = "0"+m;
-                } else {
-                    mm = ""+m;
-                }
-
-                this.timeString = mm+":"+ss;
-
-                /*time update */
-                totalSeconds--;
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                break;
             }
         }
     }
@@ -50,4 +39,17 @@ public class MyTimer implements Runnable {
     public void stopTime() {
         this.running = false;
     }
+    public int getTotalSeconds() {
+    return totalSeconds;
+}
+    public void setTime(int totalSeconds){
+        this.totalSeconds = totalSeconds;
+
+    }
+    public void start() {
+
+        running = true;
+        new Thread(this).start();
+}
+    
 }

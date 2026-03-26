@@ -18,8 +18,15 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     Image table_calculator_goodslist = new ImageIcon("Asset/Calculator_Table_ListGoods.png").getImage();
     Image CustomerBank = new ImageIcon("Asset/CustomerBank.png").getImage();
     Image Level1ICon = new ImageIcon("Asset/Level1.png").getImage();
+    Image Level2ICon = new ImageIcon("Asset/Level2.png").getImage();
+    Image Level3ICon = new ImageIcon("Asset/Level3.png").getImage();
+    Image Level4ICon = new ImageIcon("Asset/Level4.png").getImage();
+    Image Level5ICon = new ImageIcon("Asset/Level5.png").getImage();
     Image Wrong1 = new ImageIcon("CustomerImage/สงสัย.png").getImage();
     Image Wrong2 = new ImageIcon("CustomerImage/ตกใจ.png").getImage();
+    Image couponmini = new ImageIcon("Asset/minicoupon.png").getImage(); 
+        
+    ;
     Image presentcustomerImg;
     // Image goodsList = new ImageIcon("Asset/ListGoods.png");
 
@@ -69,19 +76,20 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     
     Rectangle goodsListRect = new Rectangle(1050,715,335,400);
 
-    Rectangle goodRect = new Rectangle(206,550,150,150);
+    Rectangle goodRect = new Rectangle(-200,450,225,225);
 
     Rectangle IconLevel1 = new Rectangle(80,50,1400,900);
 
     Rectangle wrongRect = new Rectangle(350,80,1200,1050); 
 
+    Rectangle couponminiRect = new Rectangle(510,360,100,50);
+
     public LevelCanvas(Game game) {
-        timerLogic = new MyTimer(150);
+        timerLogic = new MyTimer(game.getTime());
+        timerLogic.start();
         // presentcustomer = game.getCustomer();
         // presentcustomerImg = new ImageIcon(presentcustomer.getimagePath()).getImage();
         // 2. สร้าง Thread แยกเพื่อให้นาฬิกาวิ่งเลนขนาน (หน้าจอจะได้ไม่ค้าง)
-        Thread t = new Thread(timerLogic);
-        t.start();
         this.game = game;
         // 3. สร้าง Timer ตัวเล็กๆ เพื่อสั่งให้หน้าจอ "วาดใหม่" (Repaint) ทุกๆ 0.1 วินาที
         // เพื่อให้เลขนาฬิกาที่อัปเดตใน Thread โชว์บนหน้าจอทันที
@@ -134,9 +142,9 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         txt.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 currentFocus = txt; // ถ้าคลิกช่องคำนวณ ให้พิมพ์ลงช่องนี้
-                
             }
         });
+        
 
         
         
@@ -178,7 +186,7 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     public void setLeavingCustomer(Customer c) {
         this.leavingCustomer = c;
     }
-    public void showCouponDialog() {
+    public void showGoodListDialog() {
                 JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), true);
                 Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
                 dialog.setSize(screen);
@@ -276,7 +284,9 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         Rectangle r = scale(customerRect);
         Rectangle LI = scale(IconLevel1);
         Rectangle gd = scale(goodRect);
-
+        Rectangle cm = scale(couponminiRect);
+        String timeToShow ;
+        
         if (currentCustomer != null) {
                 CountWrong = currentCustomer.getCountWrong();
         }
@@ -287,7 +297,7 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         int timex = 1000;
         int timey = 55;
         
-        int goodx = 206;
+        int goodx = 50;
         int goody = 550;
         
         double scaleX = getWidth()/(double)baseWidth;
@@ -322,8 +332,21 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,Prongsai);
         
         g2.setComposite(ac);
-        g2.drawImage(Level1ICon, LI.x,currentY,LI.width,LI.height,this);
-
+        if (game.getLevel() == 1) {
+            g2.drawImage(Level1ICon, LI.x,currentY,LI.width,LI.height,this);
+        }
+        else if (game.getLevel() == 2){
+            g2.drawImage(Level2ICon, LI.x,currentY,LI.width,LI.height,this);
+        }
+        else if (game.getLevel() == 3){
+            g2.drawImage(Level3ICon, LI.x,currentY,LI.width,LI.height,this);
+        }
+        else if (game.getLevel() == 4){
+            g2.drawImage(Level4ICon, LI.x,currentY,LI.width,LI.height,this);
+        }
+        else if (game.getLevel() == 5){
+            g2.drawImage(Level5ICon, LI.x,currentY,LI.width,LI.height,this);
+        }
         g2.setComposite(oldComposite);
         g2.drawImage(table_calculator_goodslist,0,0,getWidth(),getHeight(),this);
         if (currentCustomer != null && currentCustomer.getX() == currentCustomer.getTargetX()){
@@ -331,10 +354,12 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
                 Goods good = game.getCustomer().getGoodsToBuy().get(i);
                 Image gicon = new ImageIcon(good.getImagePath()).getImage();
                 g2.drawImage(gicon,gx,gy,gd.width,gd.height,this);
-                gx += 75;
+                gx += 110;
             }
         }
-
+        if(currentCustomer.haveCoupon()){
+            g2.drawImage(couponmini,0,0,getWidth(),getHeight(),this);
+        }
         if (CountWrong == 1){
             g2.drawImage(Wrong1, 0,0,getWidth(),getHeight(), this);
         }
@@ -344,46 +369,50 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         else if(CountWrong == 3){
             CountWrong = 0;
         }
-        String timeToShow = timerLogic.getTimeString();
 
         // ตั้งค่าฟอนต์และสีที่จะวาดเลขนาฬิกา
         g.setFont(customFont);
         g.setColor(Color.WHITE);
-        
+        if (timerLogic.getTimeString() == null) {
+            timeToShow = "00:00";
+        } else {
+            timeToShow = timerLogic.getTimeString();
+        }
+
         // วาดลงบนหน้าจอ (ตำแหน่ง x=80, y=100)
         g.drawString(timeToShow, tx, ty);
 
         g2.setFont(customFont.deriveFont((float)(68 * scaledebt)) );
         g2.setColor(Color.WHITE);
         
-        g2.drawString(String.valueOf(game.getDept()), dx, dy);
+        g2.drawString(String.valueOf(game.getDebt()), dx, dy);
         g2.setColor(Color.RED);
         
-        g2.draw(scale(btn7));
-        g2.draw(scale(btn8));
-        g2.draw(scale(btn9));
-        g2.draw(scale(btnDiv));
+        // g2.draw(scale(btn7));
+        // g2.draw(scale(btn8));
+        // g2.draw(scale(btn9));
+        // g2.draw(scale(btnDiv));
         
-        g2.draw(scale(btn4));
-        g2.draw(scale(btn5));
-        g2.draw(scale(btn6));
-        g2.draw(scale(btnMul));
+        // g2.draw(scale(btn4));
+        // g2.draw(scale(btn5));
+        // g2.draw(scale(btn6));
+        // g2.draw(scale(btnMul));
         
-        g2.draw(scale(btn1));
-        g2.draw(scale(btn2));
-        g2.draw(scale(btn3));
-        g2.draw(scale(btnSub));
+        // g2.draw(scale(btn1));
+        // g2.draw(scale(btn2));
+        // g2.draw(scale(btn3));
+        // g2.draw(scale(btnSub));
         
-        g2.draw(scale(btn0));
-        g2.draw(scale(btnDot));
-        g2.draw(scale(btnEqual));
-        g2.draw(scale(btnAdd));
-        g2.draw(scale(btnAns));
-        g2.draw(scale(clearBtn));
-        g2.draw(scale(goodsListRect));
+        // g2.draw(scale(btn0));
+        // g2.draw(scale(btnDot));
+        // g2.draw(scale(btnEqual));
+        // g2.draw(scale(btnAdd));
+        // g2.draw(scale(btnAns));
+        // g2.draw(scale(clearBtn));
+        // g2.draw(scale(goodsListRect));
         g2.draw(scale(goodRect));
-        
-        g2.draw(scale(wrongRect));
+        g2.draw(scale(cm));
+        // g2.draw(scale(wrongRect));
     }
     
     public static double calculate(String exp){
@@ -445,16 +474,16 @@ public void mouseClicked(MouseEvent e){
             } else if (btn0.contains(x, y)) {
                 currentFocus.setText(currentFocus.getText()+"0");
             } else if (clearBtn.contains(x, y)) {
-                currentFocus.setText("");
-            } else if (btnAdd.contains(x, y)) {
+                txtAns.setText("");
+            } else if (game.getLevel() < 4 && btnAdd.contains(x, y)) {
                 currentFocus.setText(currentFocus.getText()+"+");
-            } else if (btnSub.contains(x, y)) {
+            } else if (game.getLevel() < 4 && btnSub.contains(x, y)) {
                 currentFocus.setText(currentFocus.getText()+"-");
-            } else if (btnMul.contains(x, y)) {
+            } else if (game.getLevel() < 4 && btnMul.contains(x, y)) {
                 currentFocus.setText(currentFocus.getText()+"*");
-            } else if (btnDiv.contains(x, y)) {
+            } else if (game.getLevel() < 4 && btnDiv.contains(x, y)) {
                 currentFocus.setText(currentFocus.getText()+"/");
-            } else if (btnEqual.contains(x, y)) {
+            } else if (game.getLevel() < 4 && btnEqual.contains(x, y)) {
                 double ans = calculate(currentFocus.getText());
                 int floorAns = (int)Math.floor(ans); // ปัดลงเสมอ
                 currentFocus.setText(String.valueOf(floorAns));
@@ -463,7 +492,9 @@ public void mouseClicked(MouseEvent e){
             } else if (btnDot.contains(x, y)) {
                 currentFocus.setText(currentFocus.getText()+".");
             } else if (goodsListRect.contains(x,y)){
-                showCouponDialog();
+                showGoodListDialog();
+            } else if (currentCustomer.haveCoupon() && couponminiRect.contains(x,y)){
+                currentCustomer.showCoupon();
             }
             
 
@@ -510,5 +541,46 @@ public void mouseClicked(MouseEvent e){
     public void actionPerformed(ActionEvent e) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'actionPerformed'");
+    }
+    public MyTimer getTimer() { 
+        return timerLogic; 
+    }
+    public void showEndDialog(boolean isWin) {
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), true);
+        dialog.setSize(game.getWidth(), game.getHeight());
+        dialog.setUndecorated(true);
+        dialog.setBackground(new Color(0, 0, 0,251));
+
+        String imgPath;
+        if (isWin && game.getLevel() != 5) {
+            imgPath = "Asset/win.png";
+
+        }else if(isWin && game.getLevel() == 5) {
+            imgPath = "Asset/congrat.png";
+        } 
+        
+        else {
+            imgPath = "Asset/lose.png";
+        }
+
+        Image img = new ImageIcon(imgPath).getImage();
+        JLabel label = new JLabel(new ImageIcon(img));
+        dialog.add(label);
+
+        
+
+        // ⏱️ ปิดอัตโนมัติ 4 วิ
+        new Timer(4000, e -> {
+            dialog.dispose();
+            
+        }).start();
+        
+        dialog.setVisible(true);
+    }
+    public void setTimer(MyTimer timer) {
+        this.timerLogic = timer;
+    }
+    public AnimationLevel getAninmation(){
+        return AnLe;
     }
 }

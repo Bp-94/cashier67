@@ -6,9 +6,9 @@ import java.util.*;
 public class Customer implements Obserable, Runnable, MouseListener {
     private ArrayList<Observer> observers = new ArrayList<>();
     private ArrayList<Goods> goodsToBuy;
-    private int amountToBuy, discount, age, countWrong, targetX, x;
+    private int amountToBuy, age, countWrong, targetX, x;
     private boolean haveAlcohol, haveCoupon, leaving;
-    private double finalPrice, payment;
+    private double finalPrice, payment,discount;
     private String imagePath;
     private Game game;
     private Random random;
@@ -21,7 +21,7 @@ public class Customer implements Obserable, Runnable, MouseListener {
         random = new Random();
         int imageIndex = random.nextInt(6) + 1;
         imagePath = "CustomerImage/Customer" + imageIndex + ".png";
-        x = -400;
+        x = -600;
         goodsToBuy = new ArrayList<>();
         if (game.getLevel() <= 3) {
             amountToBuy = random.nextInt(7) + 1;
@@ -47,9 +47,10 @@ public class Customer implements Obserable, Runnable, MouseListener {
             if (haveCoupon) {
                 int discounts[] = {25, 50};
                 discount = discounts[random.nextInt(discounts.length)];
-                finalPrice -= finalPrice * (discount / 100);
+                finalPrice -= finalPrice * (discount / 100.0);
             }
         }
+        finalPrice = Math.floor(finalPrice);
         payment = finalPrice;
         countWrong = 0;
         leaving = false;
@@ -105,7 +106,9 @@ public class Customer implements Obserable, Runnable, MouseListener {
     }
     
     public void leave() {
+        
         leaving = true;
+        System.out.println("CustomerLeft triggered");
         this.notifyObserver("CustomerLeft");
     }
     
@@ -131,7 +134,7 @@ public class Customer implements Obserable, Runnable, MouseListener {
         dialog.setSize(game.getWidth() - 100, game.getHeight() - 100);
         dialog.setLocationRelativeTo(game);
         dialog.setUndecorated(true);
-        ImageIcon icon = new ImageIcon("CustomerImage/Coupon" + discount + ".png");
+        ImageIcon icon = new ImageIcon("Asset/Coupon" + (int)discount + ".png");
         Image scaled = icon.getImage().getScaledInstance(dialog.getWidth(), dialog.getHeight(), Image.SCALE_SMOOTH);
         JLabel show = new  JLabel(new ImageIcon(scaled));
         show.setOpaque(false);
