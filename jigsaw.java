@@ -25,9 +25,9 @@ public class jigsaw extends Minigame {
 
     // ปรับตำแหน่ง
     private static final int SLOT_START_X = 375;
-    private static final int SLOT_START_Y = 290;
+    private static final int SLOT_START_Y = 275;
     private static final int PIECE_START_X = 650;
-    private static final int PIECE_START_Y = 290;
+    private static final int PIECE_START_Y = 275;
 
     //Constructor
     public jigsaw() {
@@ -260,9 +260,9 @@ public class jigsaw extends Minigame {
         return result;
     }
 
-    public static void main(String[] args) throws Exception {
-        jigsaw g = new jigsaw();
-        SwingUtilities.invokeAndWait(() -> g.play());
-        System.out.println("ผ่าน: " + g.getPass());
+    //public static void main(String[] args) throws Exception {
+        //jigsaw g = new jigsaw();
+        //SwingUtilities.invokeAndWait(() -> g.play());
+        //System.out.println("ผ่าน: " + g.getPass());
     }
 }
