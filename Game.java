@@ -2,6 +2,9 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 import javax.swing.event.*;
+import java.util.List;
+import java.util.Random;
+
 public class Game extends JFrame implements Observer {
     private boolean transitioning = false;
     private Font customFont;
@@ -25,6 +28,16 @@ public class Game extends JFrame implements Observer {
 
     private double debt;
 
+    private MinigameScheduler mgScheduler;
+    // private List<Minigame> games = List.of(
+    //     new guessGoods(),
+    //     new guessBill(),
+    //     new guessPrice(),
+    //     new jigsaw()
+    // );
+
+    
+    // Minigame random = games.get(randomminigame.nextInt(games.size()));
     public static final Goods goodsList[] = {
         new Goods("Alcohol", "Goods/เหล้า.png",120),
         new Goods("Orange", "Goods/ส้ม.png",46),
@@ -71,6 +84,9 @@ public class Game extends JFrame implements Observer {
         // setComponentZOrder(TableAndCalculator, 0);
         loop = new GameLoop(this);
         new Thread(loop).start();
+
+        mgScheduler = new MinigameScheduler(this);
+        mgScheduler.start(); 
         setVisible(true);
         System.out.println(getWidth() + " " + getHeight());
     }
@@ -171,6 +187,7 @@ public class Game extends JFrame implements Observer {
     }
     
     public void nextLevel() {
+        mgScheduler.stop();
         levelCanvas.getAninmation().stopAnimation();
         loop.stopLoop();
         levelCanvas.getTimer().stopTime();
@@ -203,6 +220,7 @@ public class Game extends JFrame implements Observer {
         }
     }
     public void winGame() {
+        mgScheduler.stop();
         if (gameState != PLAYING) {
         return;
         }
@@ -235,6 +253,7 @@ public class Game extends JFrame implements Observer {
     }
 
     public void loseGame() {
+        mgScheduler.stop();
         if (gameState != PLAYING) {
             return;
         }
@@ -254,7 +273,9 @@ public class Game extends JFrame implements Observer {
         dispose();
         new HomeScreen();
     }
-
+    public boolean isMinigameActive() {
+    return mgScheduler != null && mgScheduler.isActive();
+}
     // public static void main(String[] args){
     //     Game currentGame = new Game();
     //     currentGame.isGameEnd(0, 0, currentGame);
