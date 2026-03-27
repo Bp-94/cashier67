@@ -52,6 +52,7 @@ public class Customer implements Obserable, Runnable, MouseListener {
                 finalPrice -= finalPrice * (discount / 100.0);
             }
         }
+        System.out.println(age);
         finalPrice = Math.floor(finalPrice);
         payment = finalPrice;
         countWrong = 0;
@@ -106,15 +107,22 @@ public class Customer implements Obserable, Runnable, MouseListener {
             payment *= 0.5;
         }else {
             this.leave();
+            
+            System.out.println("CustomerLeft triggered");
+            
         }
         return false;
     }
     
     public void leave() {
-        
+        System.out.println("LEAVE CALLED: " + this);
+        if (leaving) return;
         leaving = true;
         System.out.println("CustomerLeft triggered");
         this.notifyObserver("CustomerLeft");
+    }
+    public boolean isLeaving(){
+        return leaving;
     }
     
     // public void showID_Card() {
@@ -210,16 +218,16 @@ public class Customer implements Obserable, Runnable, MouseListener {
         System.out.println(e.getX() + " " + e.getY());
         if (notSell != null && notSell.contains(e.getPoint())) {
             if (age > 20) {
-                this.notifyObserver("wrong");
+                this.notifyObserver("ไม่ขาย:ผิด");
             }else {
-                this.notifyObserver("correct");
+                this.notifyObserver("ไม่ขาย:ถูก");
             }
             dialog.dispose();
         }else if (sell != null && sell.contains(e.getPoint())) {
             if (age < 20) {
-                this.notifyObserver("wrong");
+                this.notifyObserver("ขาย:ถูก");
             }else {
-                this.notifyObserver("correct");
+                this.notifyObserver("ขาย:ผิด");
             }
             dialog.dispose();
         }else if (closeCoupon != null && closeCoupon.contains(e.getPoint())) {

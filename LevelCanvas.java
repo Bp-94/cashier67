@@ -27,10 +27,10 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     Image Level3ICon = new ImageIcon("Asset/Level3.png").getImage();
     Image Level4ICon = new ImageIcon("Asset/Level4.png").getImage();
     Image Level5ICon = new ImageIcon("Asset/Level5.png").getImage();
-    Image Wrong1 = new ImageIcon("CustomerImage/สงสัย.png").getImage();
-    Image Wrong2 = new ImageIcon("CustomerImage/ตกใจ.png").getImage();
-    Image couponmini = new ImageIcon("Asset/minicoupon.png").getImage(); 
-    Image IDmini = new ImageIcon("CustomerImage/miniID.png").getImage(); 
+    Image Wrong1 = new ImageIcon("CustomerImage/Question.png").getImage();
+    Image Wrong2 = new ImageIcon("CustomerImage/Exclamation.png").getImage();
+    Image couponmini = new ImageIcon("CustomerImage/minicoupon.png").getImage(); 
+    Image IDmini = new ImageIcon("CustomerImage/mini_ID.png").getImage(); 
 
         
     ;
@@ -535,17 +535,17 @@ public void mousePressed(MouseEvent e) {
         if (notSell != null && notSell.contains(e.getPoint())) {
             dialogOpen = false;
             if (currentCustomer.getAge() > 20) {
-                this.notifyObserver("wrong");
+                this.notifyObserver("ไม่ขาย:ผิด");
             }else {
-                this.notifyObserver("correct");
+                this.notifyObserver("ไม่ขาย:ถูก");
             }
             dialog.dispose();
         }else if (sell != null && sell.contains(e.getPoint())) {
             dialogOpen = false;
             if (currentCustomer.getAge() < 20) {
-                this.notifyObserver("wrong");
+                this.notifyObserver("ขาย:ผิด");
             }else {
-                this.notifyObserver("correct");
+                this.notifyObserver("ขาย:ถูก");
             }
             dialog.dispose();
 
@@ -671,6 +671,7 @@ public void mouseClicked(MouseEvent e){
         Image scaled = icon.getImage().getScaledInstance(dialog.getWidth(), dialog.getHeight(), Image.SCALE_SMOOTH);
         JLabel show = new  JLabel(new ImageIcon(scaled));
         show.setOpaque(false);
+        System.out.println(currentCustomer.getAge());
         notSell = scale(new Rectangle(490, 620, 225, 75));
         sell = scale(new Rectangle(830, 620, 207, 75));
         show.addMouseListener(this);
@@ -684,7 +685,7 @@ public void mouseClicked(MouseEvent e){
         dialog.setLocationRelativeTo(game);
         dialog.setUndecorated(true);
         dialog.setBackground(new Color(0, 0, 0, 100));
-        ImageIcon icon = new ImageIcon("Asset/Coupon" + (int) currentCustomer.getDiscount() + ".png");
+        ImageIcon icon = new ImageIcon("CustomerImage/Coupon" + (int) currentCustomer.getDiscount() + ".png");
         Image scaled = icon.getImage().getScaledInstance(dialog.getWidth(), dialog.getHeight(), Image.SCALE_SMOOTH);
         JLabel show = new  JLabel(new ImageIcon(scaled));
         show.setOpaque(false);
@@ -707,6 +708,8 @@ public void mouseClicked(MouseEvent e){
 
         }else if(isWin && game.getLevel() == 5) {
             imgPath = "Asset/congrat.png";
+            // dialog.dispose();
+            // new HomeScreen();
         } 
         
         else {

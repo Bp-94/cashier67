@@ -34,7 +34,8 @@ public class Game extends JFrame implements Observer {
         new Goods("Chocolate", "Goods/ขนมช็อคโกแลต.png", 20),
         new Goods("Pockey", "Goods/ขนมป้อกกี้.png", 25),
         new Goods("Jelly", "Goods/ขนมเยลลี่.png", 35),
-        new Goods("egg", "Goods/ไข่.png", 60)
+        new Goods("egg", "Goods/ไข่.png", 60),
+        new Goods("Figure", "Goods/ฟิกเกอร์จารแบงค์.png", 670)
         
     };
     public Game(double debt,int time,int level){
@@ -123,11 +124,19 @@ public class Game extends JFrame implements Observer {
 
             // ส่งให้ canvas
             levelCanvas.setCurrentCustomer(presentCustomer);
+            return;
         }
-        else if (message.equals("wrong")){
+        else if (message.equals("ไม่ขาย:ผิด") || message.equals("ขาย:ผิด")){
+            System.out.println("trigger3");
             int newTime = levelCanvas.getTimer().getTotalSeconds() - 10;
             if (newTime < 0) newTime = 0;
             levelCanvas.getTimer().setTime(newTime);
+            leavingCustomer = presentCustomer;
+            presentCustomer.leave();
+        }
+        else if(message.equals("ไม่ขาย:ถูก")){
+            System.out.println("trigger2");
+            
             leavingCustomer = presentCustomer;
             presentCustomer.leave();
         }
@@ -136,13 +145,22 @@ public class Game extends JFrame implements Observer {
             // if (presentCustomer.getAge() < 20){
                 
             // }
-            if (presentCustomer.getX() == presentCustomer.getTargetX()){
+            Customer c = presentCustomer;
+            if (c.getX() == c.getTargetX()){
 
-                if (presentCustomer.checkPrice(playerInput)) {
-                    this.setdebt(this.getDebt() - presentCustomer.getPayment());
-                    leavingCustomer = presentCustomer;
-                    presentCustomer.leave();
-    
+                if (c.checkPrice(playerInput)) {
+                    System.out.println("triggercheckprice");
+                    this.setdebt(this.getDebt() - c.getPayment());
+                    leavingCustomer = c;
+                    c.leave();
+                }
+                else if (!c.isLeaving() && c.getAge() < 20 && c.haveAlcohol()){
+                    System.out.println("trigger");
+                    int newTime = levelCanvas.getTimer().getTotalSeconds() - 10;
+                    if (newTime < 0) newTime = 0;
+                    levelCanvas.getTimer().setTime(newTime);
+                    leavingCustomer = c;
+                    c.leave();
                 }
                 else{
                     levelCanvas.repaint();
@@ -151,6 +169,7 @@ public class Game extends JFrame implements Observer {
         }catch (NumberFormatException e) {}
         
     }
+    
     public void nextLevel() {
         levelCanvas.getAninmation().stopAnimation();
         loop.stopLoop();
@@ -158,7 +177,7 @@ public class Game extends JFrame implements Observer {
         dispose();
         level++;
 
-        debt = 100;
+        debt = 1200;
 
         int time;
         
@@ -199,7 +218,14 @@ public class Game extends JFrame implements Observer {
         levelCanvas.getTimer().stopTime();
 
         levelCanvas.showEndDialog(true);
-        nextLevel();
+        if(level < 5){
+
+            nextLevel();
+        }
+        else{
+            dispose();
+            new HomeScreen();
+        }
     }
     public Customer getLeavingCustomer(){
         return leavingCustomer;
@@ -226,6 +252,7 @@ public class Game extends JFrame implements Observer {
         levelCanvas.showEndDialog(false);
 
         dispose();
+        new HomeScreen();
     }
 
     // public static void main(String[] args){
