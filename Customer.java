@@ -7,13 +7,15 @@ public class Customer implements Obserable, Runnable, MouseListener {
     private ArrayList<Observer> observers = new ArrayList<>();
     private ArrayList<Goods> goodsToBuy;
     private int amountToBuy, age, countWrong, targetX, x;
-    private boolean haveAlcohol, haveCoupon, leaving;
+    private boolean haveAlcohol, haveCoupon, leaving,Enter;
     private double finalPrice, payment,discount;
     private String imagePath;
     private Game game;
     private Random random;
     private JDialog dialog;
     private Rectangle closeCoupon, sell, notSell;
+
+
     
     public Customer(Game game) {
         this.game = game;
@@ -40,7 +42,7 @@ public class Customer implements Obserable, Runnable, MouseListener {
             finalPrice += g.getPrice();
         }
         if (haveAlcohol) {
-            int ages[] = {18, 19, 21, 25};
+            int ages[] = {14,18,19,21,25};
             age = ages[random.nextInt(ages.length)];
         }else {
             haveCoupon = random.nextDouble() < 0.3; //มีโอกาส 30%
@@ -53,6 +55,7 @@ public class Customer implements Obserable, Runnable, MouseListener {
         finalPrice = Math.floor(finalPrice);
         payment = finalPrice;
         countWrong = 0;
+        Enter = false;
         leaving = false;
         Thread thread = new Thread(this);
         thread.start();
@@ -61,8 +64,9 @@ public class Customer implements Obserable, Runnable, MouseListener {
     @Override
     public void run() {
         targetX = -200;
+        Enter = true;
         // เดินเข้า
-        while (x < targetX) {
+        while (Enter &&x < targetX) {
             x += 4;
             // game.getLevelCanvas().repaint();
             try {
@@ -71,6 +75,7 @@ public class Customer implements Obserable, Runnable, MouseListener {
                 e.printStackTrace();
             }
         }
+        Enter = false;
         //รอ leave()
         while (!leaving) {
             try {
@@ -81,7 +86,7 @@ public class Customer implements Obserable, Runnable, MouseListener {
         }
         // เดินออก
         while (x < game.getWidth()) {
-            x += 4;
+            x += 8;
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
@@ -112,38 +117,39 @@ public class Customer implements Obserable, Runnable, MouseListener {
         this.notifyObserver("CustomerLeft");
     }
     
-    public void showID_Card() {
-        dialog = new JDialog(game, true);
-        dialog.setSize(game.getWidth() - 100, game.getHeight() - 100);
-        dialog.setLocationRelativeTo(game);
-        dialog.setUndecorated(true);
-        dialog.setBackground(new Color(0, 0, 0, 0));
-        ImageIcon icon = new ImageIcon("CustomerImage/ID" + age + ".png");
-        Image scaled = icon.getImage().getScaledInstance(dialog.getWidth(), dialog.getHeight(), Image.SCALE_SMOOTH);
-        JLabel show = new  JLabel(new ImageIcon(scaled));
-        show.setOpaque(false);
-        notSell = new Rectangle(445, 642, 225, 75);
-        sell = new Rectangle(785, 640, 207, 75);
-        show.addMouseListener(this);
-        dialog.add(show);
-        dialog.setVisible(true);
-    }
+    // public void showID_Card() {
+    //     dialog = new JDialog(game, true);
+    //     dialog.setSize(game.getWidth() - 100, game.getHeight() - 100);
+    //     dialog.setLocationRelativeTo(game);
+    //     dialog.setUndecorated(true);
+    //     dialog.setBackground(new Color(0, 0, 0, 0));
+    //     ImageIcon icon = new ImageIcon("CustomerImage/ID" + age + ".png");
+    //     Image scaled = icon.getImage().getScaledInstance(dialog.getWidth(), dialog.getHeight(), Image.SCALE_SMOOTH);
+    //     JLabel show = new  JLabel(new ImageIcon(scaled));
+    //     show.setOpaque(false);
+    //     notSell = new Rectangle(445, 642, 225, 75);
+    //     sell = new Rectangle(785, 640, 207, 75);
+    //     show.addMouseListener(this);
+    //     dialog.add(show);
+    //     dialog.setVisible(true);
+    // }
     
-    public void showCoupon() {
-        dialog = new JDialog(game, true);
-        dialog.setSize(game.getWidth() - 100, game.getHeight() - 100);
-        dialog.setLocationRelativeTo(game);
-        dialog.setUndecorated(true);
-        ImageIcon icon = new ImageIcon("Asset/Coupon" + (int)discount + ".png");
-        Image scaled = icon.getImage().getScaledInstance(dialog.getWidth(), dialog.getHeight(), Image.SCALE_SMOOTH);
-        JLabel show = new  JLabel(new ImageIcon(scaled));
-        show.setOpaque(false);
-        closeCoupon = new Rectangle(600, 622, 205, 75);
-        show.addMouseListener(this);
-        dialog.add(show);
-        dialog.setVisible(true);
-    }
-    
+    // public void showCoupon() {
+    //     dialog = new JDialog(game, true);
+    //     dialog.setSize(game.getWidth() - 100, game.getHeight() - 100);
+    //     dialog.setBackground(new Color(0, 0, 0, 0));
+    //     dialog.setLocationRelativeTo(game);
+    //     dialog.setUndecorated(true);
+    //     ImageIcon icon = new ImageIcon("Asset/Coupon" + (int)discount + ".png");
+    //     Image scaled = icon.getImage().getScaledInstance(dialog.getWidth(), dialog.getHeight(), Image.SCALE_SMOOTH);
+    //     JLabel show = new  JLabel(new ImageIcon(scaled));
+    //     show.setOpaque(false);
+    //     closeCoupon = new Rectangle(600, 622, 205, 75);
+    //     show.addMouseListener(this);
+    //     dialog.add(show);
+    //     dialog.setVisible(true);
+    // }
+
     //Setter&Getter
     public double getPayment() {
         return payment;
@@ -160,6 +166,9 @@ public class Customer implements Obserable, Runnable, MouseListener {
     public int getAge() {
         return age;
     }
+    public double getDiscount(){
+        return discount;
+    }
     public int getAmountToBuy() {
         return amountToBuy;
     }
@@ -168,6 +177,9 @@ public class Customer implements Obserable, Runnable, MouseListener {
     }
     public String getimagePath() {
         return imagePath;
+    }
+    public boolean getEnter(){
+        return Enter;
     }
     public boolean haveAlcohol() {
         return haveAlcohol;
@@ -194,7 +206,7 @@ public class Customer implements Obserable, Runnable, MouseListener {
     //
 
     @Override
-    public void mouseClicked(MouseEvent e) {
+    public void mousePressed(MouseEvent e) {
         System.out.println(e.getX() + " " + e.getY());
         if (notSell != null && notSell.contains(e.getPoint())) {
             if (age > 20) {
@@ -214,7 +226,7 @@ public class Customer implements Obserable, Runnable, MouseListener {
             dialog.dispose();
         }
     }
-    @Override public void mousePressed(MouseEvent e) {}
+    @Override public void mouseClicked(MouseEvent e) {}
     @Override public void mouseReleased(MouseEvent e) {}
     @Override public void mouseEntered(MouseEvent e) {}
     @Override public void mouseExited(MouseEvent e) {}

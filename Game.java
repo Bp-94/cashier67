@@ -124,8 +124,12 @@ public class Game extends JFrame implements Observer {
             // ส่งให้ canvas
             levelCanvas.setCurrentCustomer(presentCustomer);
         }
-        else if (message.equals("correct")){
-
+        else if (message.equals("wrong")){
+            int newTime = levelCanvas.getTimer().getTotalSeconds() - 10;
+            if (newTime < 0) newTime = 0;
+            levelCanvas.getTimer().setTime(newTime);
+            leavingCustomer = presentCustomer;
+            presentCustomer.leave();
         }
         try {
             double playerInput = Double.parseDouble(message);
@@ -221,7 +225,7 @@ public class Game extends JFrame implements Observer {
 
         levelCanvas.showEndDialog(false);
 
-        nextLevel();
+        dispose();
     }
 
     // public static void main(String[] args){
