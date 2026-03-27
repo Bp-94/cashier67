@@ -211,7 +211,7 @@ public class Game extends JFrame implements Observer {
     public void updateGame() {
         if (gameState != PLAYING) return;
 
-        if (levelCanvas.getTimer().getTotalSeconds() == 0) {
+        if (levelCanvas.getTimer().getTotalSeconds() <= 0) {
             loseGame();
         }
 

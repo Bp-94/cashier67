@@ -10,7 +10,7 @@ public class GameLoop implements Runnable {
 
     @Override
     public void run() {
-        while (!game.isMinigameActive()) {
+        while (running) {
             game.updateGame(); // 🔥 เรียกเช็คเกมตลอด
 
             try {

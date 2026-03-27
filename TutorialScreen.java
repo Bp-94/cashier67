@@ -106,7 +106,7 @@ public class TutorialScreen implements MouseListener {
             } else if (displayPanel.isInsideStartArea(p)) {
                 System.out.println("start game");
                 frame.dispose();
-                new Game(1000,150,1);
+                new Game(1000,30,1);
             }
             return;
         }

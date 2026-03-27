@@ -42,10 +42,15 @@ public class MyTimer implements Runnable {
     public int getTotalSeconds() {
     return totalSeconds;
 }
-    public void setTime(int totalSeconds){
-        this.totalSeconds = totalSeconds;
+    public void setTime(int totalSeconds) {
+    this.totalSeconds = totalSeconds;
+    
+    
+    int m = (totalSeconds % 3600) / 60;
+    int s = totalSeconds % 60;
+    this.timeString = String.format("%02d:%02d", m, s);
+}
 
-    }
     public void start() {
 
         running = true;

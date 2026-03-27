@@ -8,8 +8,8 @@ public class MinigameScheduler {
     private final Random random;
     private boolean minigameActive = false;
 
-    private static final int INTERVAL_MS = 20_000; // ทุก 20 วิ
-    private static final double CHANCE    = 0.5;    // โอกาส 50%
+    private static final int INTERVAL_MS = 5_000; // ทุก 20 วิ
+    private static final double CHANCE    = 0.7;    // โอกาส 50%
     private static final int PENALTY_SEC = 10;      // แพ้ → -10 วิ
 
     public MinigameScheduler(Game game) {
@@ -35,8 +35,9 @@ public class MinigameScheduler {
 
         // ตัดสินผล
         if (!mg.getPass()) {
-            MyTimer t = game.getLevelCanvas().getTimer();
-            t.setTime(Math.max(0, t.getTotalSeconds() - PENALTY_SEC));
+            int newTime = game.getLevelCanvas().getTimer().getTotalSeconds() - 10;
+            if (newTime < 0) newTime = 0;
+            game.getLevelCanvas().getTimer().setTime(newTime);
         }
 
         minigameActive = false;
