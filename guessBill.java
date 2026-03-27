@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
@@ -22,7 +21,6 @@ public class guessBill extends Minigame {
 
     // constructor
     public guessBill() {
-        this.isPass = false;
 
         // รูป -> คำตอบที่ถูกต้อง
         gameData = new HashMap<>();
@@ -104,14 +102,13 @@ public class guessBill extends Minigame {
             dialog.dispose();
         });
 
-        //รวมlayerใน JLayeredPane 
         layerP = new JLayeredPane();
         layerP.setPreferredSize(new Dimension(W, H));
 
-        layerP.add(bgLabel,         JLayeredPane.DEFAULT_LAYER); // ชั้น 0 - พื้นหลัง
-        layerP.add(silhouetteLabel, JLayeredPane.PALETTE_LAYER); // ชั้น 1 - รูปเงา
-        layerP.add(inputField,      JLayeredPane.MODAL_LAYER);   // ชั้น 2 - ช่องพิมพ์
-        layerP.add(greenButton,     JLayeredPane.POPUP_LAYER);   // ชั้น 3 - ปุ่ม
+        layerP.add(bgLabel,         JLayeredPane.DEFAULT_LAYER); // พื้นหลัง
+        layerP.add(silhouetteLabel, JLayeredPane.PALETTE_LAYER); //รูปบิล
+        layerP.add(inputField,      JLayeredPane.MODAL_LAYER);   // กล่องคำตอบ
+        layerP.add(greenButton,     JLayeredPane.POPUP_LAYER);   //ปุ่มส่ง
     }
 
 
@@ -119,7 +116,7 @@ public class guessBill extends Minigame {
         return inputField.getText().trim().equals(currentAnswer);
     }
 
-    //public static void main(String[] args) throws Exception {
+    // public static void main(String[] args) throws Exception {
     //     guessBill g = new guessBill();
     //     SwingUtilities.invokeAndWait(() -> g.play());
     //     System.out.println("ผ่าน: " + g.getPass());

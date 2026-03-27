@@ -9,19 +9,19 @@ public class guessPrice extends Minigame implements ActionListener {
     private JLayeredPane layerP;
     private JPanel choicePanel;
     private JButton[] btn;
-    private JLabel bgImg, goodsImg, tImg;
+    private JLabel bgImg;
     private DrawPanel canvas;
 
     private int currentImgindex = 0;
     private int score = 0;
-    private int goods_size = 200;
+    private final int goods_size = 200;
 
-    private Map<String, String> gameData;
-    private List<String> imgKeys;
+    private final Map<String, String> gameData;
+    private final List<String> imgKeys;
     private String[][] choice;
 
     public guessPrice(){
-        this.isPass = false;
+        this.setPass(false);
 
         gameData = new HashMap<>();
         gameData.put("ImageMinigame/กล้วย.PNG", "ImageMinigame/ช้อยเลข44.PNG");
@@ -174,7 +174,7 @@ public class guessPrice extends Minigame implements ActionListener {
             score++;
 
             if(score >= 3){
-                this.isPass = true;
+                this.setPass(true);
                 dialog.dispose();
             } else {
                 currentImgindex++;

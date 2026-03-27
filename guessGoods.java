@@ -21,7 +21,7 @@ public class guessGoods extends Minigame implements ActionListener {
     private String[][] choice;
 
     public guessGoods(){
-        this.isPass = false;
+        this.setPass(false);
 
         gameData = new HashMap<>();
         gameData.put("ImageMinigame/เงากล้วย.PNG", "ImageMinigame/ช้อยกล้วย.PNG");
@@ -178,8 +178,8 @@ public class guessGoods extends Minigame implements ActionListener {
         if(selectedAns.equals(correctAns)){
             score++;
 
-            if(score >= 5){
-                this.isPass = true;
+            if(score >= 3){
+                this.setPass(true);
                 dialog.dispose();
             } else {
                 currentImgindex++;
