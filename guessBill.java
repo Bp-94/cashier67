@@ -11,7 +11,7 @@ public class guessBill extends Minigame {
     private JTextField inputField;
     private JButton greenButton;
     private JLabel billImgLabel;
-
+    private Game game;
     private Map<String, String> gameData;
     private List<String> keys;
     private String currentAnswer;
@@ -21,8 +21,8 @@ public class guessBill extends Minigame {
     private static final int H = 720;
 
     // constructor
-    public guessBill() {
-
+    public guessBill(Game game) {
+        this.game = game;
         // รูป -> คำตอบที่ถูกต้อง
         gameData = new HashMap<>();
         gameData.put("ImageMinigame/1.PNG", "672894");
@@ -42,7 +42,7 @@ public class guessBill extends Minigame {
     public void play() {
         this.isPass = false;
 
-        dialog = new JDialog();
+        dialog = new JDialog(game , true);
         dialog.setUndecorated(true);
         dialog.setModal(true);
         dialog.setBackground(new Color(0, 0, 0, 0));
@@ -121,6 +121,9 @@ public class guessBill extends Minigame {
 
 
     public boolean checkInput() {
+        if (currentAnswer == null || currentAnswer.isEmpty()) {
+        return false; 
+    }
         return inputField.getText().trim().equals(currentAnswer);
     }
 

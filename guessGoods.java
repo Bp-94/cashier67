@@ -11,6 +11,7 @@ public class guessGoods extends Minigame implements ActionListener {
     private JButton[] btn;
     private JLabel bgImg, productImg, titleImg;
     private DrawPanel canvas;
+    private Game game;
 
     private int currentImgindex = 0;
     private int score = 0;
@@ -20,7 +21,8 @@ public class guessGoods extends Minigame implements ActionListener {
     private List<String> imgKeys;
     private String[][] choice;
 
-    public guessGoods(){
+    public guessGoods(Game game){
+        this.game = game;
         this.setPass(false);
 
         gameData = new HashMap<>();
@@ -72,7 +74,7 @@ public class guessGoods extends Minigame implements ActionListener {
 
     @Override
     public void play(){
-        dialog = new JDialog();
+        dialog = new JDialog(game , true);
         dialog.setUndecorated(true);
         dialog.setModal(true);
 

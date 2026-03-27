@@ -20,7 +20,10 @@ public class guessPrice extends Minigame implements ActionListener {
     private final List<String> imgKeys;
     private String[][] choice;
 
-    public guessPrice(){
+    private Game game;
+
+    public guessPrice(Game game){
+        this.game = game;
         this.setPass(false);
 
         gameData = new HashMap<>();
@@ -71,7 +74,7 @@ public class guessPrice extends Minigame implements ActionListener {
 
     @Override
     public void play(){
-        dialog = new JDialog();
+        dialog = new JDialog(game , true);
         dialog.setUndecorated(true);
         dialog.setModal(true);
 

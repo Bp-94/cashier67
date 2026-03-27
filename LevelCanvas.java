@@ -17,6 +17,10 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     JDialog dialog;
     private boolean dialogOpen;
 
+    private int   minusY;
+    private float minusAlpha;
+    private Image minusTenImg = new ImageIcon("Asset/minus10.png").getImage();
+
     Rectangle sell,notSell,closeCoupon;
 
     Image bg = new ImageIcon("Asset/bg.png").getImage();
@@ -86,6 +90,9 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     Rectangle goodRect = new Rectangle(-200,450,225,225);
 
     Rectangle IconLevel1 = new Rectangle(80,50,1400,900);
+    Rectangle Minus10Rect = new Rectangle(120,50,1400,900);
+
+    
 
     Rectangle wrongRect = new Rectangle(350,80,1200,1050); 
 
@@ -121,14 +128,10 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
 
         this.add((Observer) game);
         addMouseListener(this);
-        
-        
-        
+        addMouseMotionListener(this);
 
         setOpaque(true);
         setLayout(null);
-
-        
 
         txt.setFont(customFont);
         txtAns.setFont(customFont);
@@ -136,16 +139,16 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         txt.setOpaque(false);
         txt.setBackground(new Color(0,0,0,0));
         txt.setBorder(null);
+        txt.setBounds(1051, 175,202,40);
+        txt.setEditable(false);
+        txt.setCaretColor(new Color(0,0,0,0));
 
         txtAns.setOpaque(false);
         txtAns.setBackground(new Color(0,0,0,0));
         txtAns.setBorder(null);
-
-        txt.setBounds(1051, 175,202,40);
         txtAns.setBounds(967, 620, 345, 42);
 
-        txt.setEditable(false);
-        txt.setCaretColor(new Color(0,0,0,0));
+
 
         add(txtAns);
         add(txt);
@@ -186,10 +189,21 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
                         }
                     });
             }
+
+    // สำหรับอนิเมชั่นของ levelicon
     public void updateState(int currentY,float Prongsai){
         this.currentY = currentY;
         this.Prongsai = Prongsai;
         repaint();
+    }
+    // สำหรับอนิเมชั่นของ minusminigame
+    public void updateMinusAnim(int y, float alpha) {
+        this.minusY    = y;
+        this.minusAlpha = alpha;
+        repaint();
+    }
+    public void triggerMinusAnim() {
+        new AnimationLoseMinigame(this).play();
     }
     public void setCurrentCustomer(Customer c) {
         this.currentCustomer = c;
@@ -296,6 +310,7 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         Rectangle w = scale(wrongRect);
         Rectangle r = scale(customerRect);
         Rectangle LI = scale(IconLevel1);
+        Rectangle Mi = scale(Minus10Rect);
         Rectangle gd = scale(goodRect);
         Rectangle cm = scale(couponminiRect);
         Rectangle id = scale(IDRect);
@@ -363,6 +378,14 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         }
         else if (game.getLevel() == 5){
             g2.drawImage(Level5ICon, LI.x,currentY,LI.width,LI.height,this);
+        }
+        if (minusAlpha > 0) {
+            AlphaComposite acMinus = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, minusAlpha);
+            g2.setComposite(acMinus);
+
+            g2.drawImage(minusTenImg, Mi.x,minusY, Mi.width, Mi.height, this);
+
+            g2.setComposite(oldComposite);
         }
         g2.setComposite(oldComposite);
         g2.drawImage(table_calculator_goodslist,0,0,getWidth(),getHeight(),this);
@@ -680,6 +703,10 @@ public void mouseClicked(MouseEvent e){
         
     }
     public void showCoupon() {
+
+        //  เพื่อให้ถ้าเกิด กำลังโชว์คูปอง ปุ่ม ของ id card มันจะได้กดไม่ได้
+        notSell = null;
+        sell = null;
         dialog = new JDialog(game, true);
         dialog.setSize(game.getWidth() - 100, game.getHeight() - 100);
         dialog.setLocationRelativeTo(game);
@@ -689,7 +716,7 @@ public void mouseClicked(MouseEvent e){
         Image scaled = icon.getImage().getScaledInstance(dialog.getWidth(), dialog.getHeight(), Image.SCALE_SMOOTH);
         JLabel show = new  JLabel(new ImageIcon(scaled));
         show.setOpaque(false);
-        closeCoupon = scale(new Rectangle(600, 622, 205, 75));
+        closeCoupon = scale(new Rectangle(660, 605, 220, 75));
         show.addMouseListener(this);
         dialog.add(show);
         
@@ -697,6 +724,7 @@ public void mouseClicked(MouseEvent e){
     }
 
     public void showEndDialog(boolean isWin) {
+        closeCoupon = null;
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), true);
         dialog.setSize(game.getWidth(), game.getHeight());
         dialog.setUndecorated(true);
@@ -708,8 +736,7 @@ public void mouseClicked(MouseEvent e){
 
         }else if(isWin && game.getLevel() == 5) {
             imgPath = "Asset/congrat.png";
-            // dialog.dispose();
-            // new HomeScreen();
+            
         } 
         
         else {

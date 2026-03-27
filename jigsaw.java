@@ -29,8 +29,11 @@ public class jigsaw extends Minigame {
     private static final int PIECE_START_X = 650;
     private static final int PIECE_START_Y = 275;
 
+    private Game game;
+
     //Constructor
-    public jigsaw() {
+    public jigsaw(Game game) {
+        this.game = game;
         String[] puzzles = {"ImageMinigame/IMG_4216.PNG", "ImageMinigame/IMG_4217.PNG", "ImageMinigame/IMG_4218.PNG", "ImageMinigame/IMG_4219.PNG"};
         selectedPuzzle = puzzles[new Random().nextInt(puzzles.length)]; // สุ่มรูป
     }
@@ -39,7 +42,7 @@ public class jigsaw extends Minigame {
     public void play() {
         this.isPass = false;
 
-        dialog = new JDialog();
+        dialog = new JDialog(game , true);
         dialog.setUndecorated(true);
         dialog.setModal(true);
         dialog.setBackground(new Color(0, 0, 0, 0));

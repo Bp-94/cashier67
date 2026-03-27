@@ -16,6 +16,8 @@ public class Game extends JFrame implements Observer {
 
     GameLoop loop;
 
+
+
     private int time;
 
     private int gameState;
@@ -29,6 +31,8 @@ public class Game extends JFrame implements Observer {
     private double debt;
 
     private MinigameScheduler mgScheduler;
+
+    private Sound bgm = new Sound();
     // private List<Minigame> games = List.of(
     //     new guessGoods(),
     //     new guessBill(),
@@ -52,6 +56,7 @@ public class Game extends JFrame implements Observer {
         
     };
     public Game(double debt,int time,int level){
+        bgm.play("bgm.wav");
         this.debt = debt;
         this.time = time;
         this.level = level;
@@ -187,6 +192,7 @@ public class Game extends JFrame implements Observer {
     }
     
     public void nextLevel() {
+        bgm.stop();
         mgScheduler.stop();
         levelCanvas.getAninmation().stopAnimation();
         loop.stopLoop();
@@ -194,7 +200,7 @@ public class Game extends JFrame implements Observer {
         dispose();
         level++;
 
-        debt = 1200;
+        debt = 1000;
 
         int time;
         
@@ -202,7 +208,7 @@ public class Game extends JFrame implements Observer {
         else if (level == 3) time = 130;
         else time = 120;
 
-        new Game(100,time,level);
+        new Game(debt,time,level);
 
         // gameState = PLAYING;
 
@@ -220,6 +226,7 @@ public class Game extends JFrame implements Observer {
         }
     }
     public void winGame() {
+        bgm.stop();
         mgScheduler.stop();
         if (gameState != PLAYING) {
         return;
@@ -253,6 +260,7 @@ public class Game extends JFrame implements Observer {
     }
 
     public void loseGame() {
+        bgm.stop();
         mgScheduler.stop();
         if (gameState != PLAYING) {
             return;
