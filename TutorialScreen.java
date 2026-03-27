@@ -7,20 +7,15 @@ public class TutorialScreen implements MouseListener {
     private JFrame frame;
     private TutorialPanel tutorialPanel;
     private ImagePanel displayPanel;
-
     private int currentPage = 0;
 
-    // 0 = letter_close
-    // 1 = letter_open
-    // 2 = storyPage
-    // 3-11 = tutorial1-9
     private String[] pages = {
             "/images/Letter_close.PNG",
             "/images/Letter_open.PNG",
             "/images/StoryPage.PNG",
             "/images/TutorialPage1.PNG",
             "/images/TutorialPage2.PNG",
-            "/images/TutorialPage.PNG",
+            "/images/TutorialPage3.PNG",
             "/images/TutorialPage4.PNG",
             "/images/TutorialPage5.PNG",
             "/images/TutorialPage6.PNG",
@@ -58,16 +53,12 @@ public class TutorialScreen implements MouseListener {
 
     private void updatePage() {
         displayPanel.setImage(pages[currentPage]);
-
-        // letter_close / letter_open ใช้ขนาดเดิม
         if (currentPage == 0 || currentPage == 1) {
             displayPanel.setScaleMultiplier(0.6);
         }
-        // StoryPage + TutorialPage1-9 ขยายใหญ่ขึ้น
         else {
             displayPanel.setScaleMultiplier(0.9);
         }
-
         tutorialPanel.repaint();
     }
 
@@ -78,7 +69,6 @@ public class TutorialScreen implements MouseListener {
         Point p = e.getPoint();
         System.out.println("clicked: " + p + ", currentPage = " + currentPage);
 
-        // ===== หน้า letter_close =====
         if (currentPage == 0) {
             if (displayPanel.isInsideLetterArea(p)) {
                 System.out.println("go to letter_open");
@@ -87,8 +77,6 @@ public class TutorialScreen implements MouseListener {
             }
             return;
         }
-
-        // ===== หน้า letter_open =====
         if (currentPage == 1) {
             if (displayPanel.isInsideLetterArea(p)) {
                 System.out.println("go to storyPage");
@@ -97,8 +85,6 @@ public class TutorialScreen implements MouseListener {
             }
             return;
         }
-
-        // ===== หน้า storyPage =====
         if (currentPage == 2) {
             if (displayPanel.isInsidePrevArea(p)) {
                 System.out.println("story prev -> HomeScreen");
@@ -112,7 +98,6 @@ public class TutorialScreen implements MouseListener {
             return;
         }
 
-        // ===== หน้า tutorial สุดท้าย =====
         if (currentPage == pages.length - 1) {
             if (displayPanel.isInsidePrevArea(p)) {
                 System.out.println("last tutorial prev");
@@ -125,8 +110,6 @@ public class TutorialScreen implements MouseListener {
             }
             return;
         }
-
-        // ===== หน้า tutorial ทั่วไป =====
         if (displayPanel.isInsidePrevArea(p)) {
             System.out.println("tutorial prev");
             currentPage--;
@@ -147,8 +130,6 @@ public class TutorialScreen implements MouseListener {
         new TutorialScreen();
     }
 }
-
-// ================= BACKGROUND =================
 class TutorialPanel extends JPanel {
     private Image bg;
 
@@ -161,15 +142,9 @@ class TutorialPanel extends JPanel {
         g.drawImage(bg, 0, 0, getWidth(), getHeight(), this);
     }
 }
-
-// ================= IMAGE PANEL =================
 class ImagePanel extends JPanel {
     private Image img;
-
-    // ตำแหน่งและขนาดของรูปที่วาดจริง
     private int drawX, drawY, drawW, drawH;
-
-    // ใช้ควบคุมว่าหน้าไหนใหญ่ หน้าไหนเล็ก
     private double scaleMultiplier = 0.6;
 
     public ImagePanel(String path) {
@@ -195,29 +170,27 @@ class ImagePanel extends JPanel {
         return new Rectangle(x, y, w, h);
     }
 
-    // ===== พื้นที่คลิกของจดหมาย 2 หน้าแรก =====
-    // ครอบเกือบเต็มรูปจดหมาย
+    //Letter Area
     public boolean isInsideLetterArea(Point p) {
-        Rectangle area = getRelativeRect(0.06, 0.08, 0.88, 0.84);
+        Rectangle area = getRelativeRect(0.011, 0.01, 0.98, 0.99);
         return area.contains(p);
     }
 
-    // ===== พื้นที่ prev ใน story/tutorial =====
+    //Prev Area
     public boolean isInsidePrevArea(Point p) {
-        Rectangle area = getRelativeRect(0.02, 0.58, 0.22, 0.30);
+        Rectangle area = getRelativeRect(0.09, 0.735, 0.10, 0.18);
         return area.contains(p);
     }
 
-    // ===== พื้นที่ next ใน story/tutorial =====
+    //Next Area
     public boolean isInsideNextArea(Point p) {
-        Rectangle area = getRelativeRect(0.80, 0.58, 0.22, 0.30);
+        Rectangle area = getRelativeRect(0.80, 0.735, 0.105, 0.18);
         return area.contains(p);
     }
 
-    // ===== พื้นที่ start game ในหน้าสุดท้าย =====
-    // ใช้โซนเดียวกับ next
+    //Start Area
     public boolean isInsideStartArea(Point p) {
-        Rectangle area = getRelativeRect(0.80, 0.58, 0.22, 0.30);
+        Rectangle area = getRelativeRect(0.80, 0.735, 0.105, 0.18);
         return area.contains(p);
     }
 
@@ -243,19 +216,5 @@ class ImagePanel extends JPanel {
         drawY = (panelH - drawH) / 2;
 
         g.drawImage(img, drawX, drawY, drawW, drawH, this);
-
-        // ===== debug hitbox =====
-        // ถ้าไม่อยากเห็นกรอบสี ให้คอมเมนต์ส่วนนี้ทิ้ง
-        Graphics2D g2 = (Graphics2D) g;
-
-        g2.setColor(new Color(0, 255, 0, 90));
-        g2.fill(getRelativeRect(0.06, 0.08, 0.88, 0.84)); // letter area
-
-        g2.setColor(new Color(255, 0, 0, 90));
-        g2.fill(getRelativeRect(0.02, 0.73, 0.18, 0.22)); // prev area
-
-        g2.setColor(new Color(0, 0, 255, 90));
-        g2.fill(getRelativeRect(0.80, 0.73, 0.18, 0.22)); // next/start area
-        
     }
 }

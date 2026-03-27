@@ -46,18 +46,9 @@ public class HomeScreen implements MouseListener {
         frame.setVisible(true);
 
         resizeComponents();
-
-        // check
-        System.out.println(getClass().getResource("/images/Startbtn.PNG"));
-        System.out.println(startW + " " + startH);
-        System.out.println(exitW + " " + exitH);
     }
 
     private void resizeComponents() {
-
-        btnStart.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-        btnExit.setBorder(BorderFactory.createLineBorder(Color.RED));
-
         int w = panel.getWidth();
         int h = panel.getHeight();
 
@@ -66,7 +57,7 @@ public class HomeScreen implements MouseListener {
         exitW = startW;
         exitH = startH;
 
-        // scale img
+        // scale button
         Image startImg = new ImageIcon(getClass().getResource("/images/Startbtn.PNG"))
                 .getImage().getScaledInstance(startW, startH, Image.SCALE_SMOOTH);
         btnStart.setIcon(new ImageIcon(startImg));
@@ -87,7 +78,7 @@ public class HomeScreen implements MouseListener {
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getSource() == btnStart) {
-            System.out.println("Start clicked!");
+            frame.dispose();
             new TutorialScreen();
         }
         else if (e.getSource() == btnExit) {
