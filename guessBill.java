@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
@@ -9,7 +10,7 @@ public class guessBill extends Minigame {
     private JLayeredPane layerP;
     private JTextField inputField;
     private JButton greenButton;
-    private JLabel silhouetteLabel;
+    private JLabel billImgLabel;
 
     private Map<String, String> gameData;
     private List<String> keys;
@@ -56,27 +57,34 @@ public class guessBill extends Minigame {
 
     // UI Setup
     private void setupUI() {
-        // --- Background ---
-        Image bgImg = new ImageIcon(getClass().getResource("ImageMinigame/IMG_4199.PNG"))
-                .getImage().getScaledInstance(W, H, Image.SCALE_SMOOTH);
-        JLabel bgLabel = new JLabel(new ImageIcon(bgImg));
+        Image bgImg;
+        JLabel bgLabel;
+        Image billImg;
+        javax.swing.Timer timer;
+        java.net.URL imgURL;
+
+        // Background
+        bgImg = new ImageIcon(getClass().getResource("ImageMinigame/IMG_4199.PNG")).getImage().getScaledInstance(W, H, Image.SCALE_SMOOTH);
+        bgLabel = new JLabel(new ImageIcon(bgImg));
         bgLabel.setBounds(0, 0, W, H);
 
         // รูปบิล
-        silhouetteLabel = new JLabel();
-        java.net.URL imgURL = getClass().getResource("/" + selectedImg);
+        billImgLabel = new JLabel();
+        imgURL = getClass().getResource("/" + selectedImg);
         if (imgURL != null) {
-            Image silhouette = new ImageIcon(imgURL).getImage()
-                    .getScaledInstance(430, 430, Image.SCALE_SMOOTH);
-            silhouetteLabel.setIcon(new ImageIcon(silhouette));
+            billImg = new ImageIcon(imgURL).getImage().getScaledInstance(430, 430, Image.SCALE_SMOOTH);
+            billImgLabel.setIcon(new ImageIcon(billImg));
         }
-        silhouetteLabel.setBounds((W - 430) / 2, 170, 430, 430);
+        billImgLabel.setBounds((W - 430) / 2, 170, 430, 430);
 
         // ซ่อนรูปหลัง 2 วินาที
-        javax.swing.Timer timer = new javax.swing.Timer(2000, e -> {
-            silhouetteLabel.setIcon(null);
-            ((javax.swing.Timer) e.getSource()).stop();
+        timer = new javax.swing.Timer(2000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                billImgLabel.setIcon(null);
+            }
         });
+        timer.setRepeats(false);
         timer.start();
 
         // ช่องพิมพ์คำตอบ
@@ -105,10 +113,10 @@ public class guessBill extends Minigame {
         layerP = new JLayeredPane();
         layerP.setPreferredSize(new Dimension(W, H));
 
-        layerP.add(bgLabel,         JLayeredPane.DEFAULT_LAYER); // พื้นหลัง
-        layerP.add(silhouetteLabel, JLayeredPane.PALETTE_LAYER); //รูปบิล
-        layerP.add(inputField,      JLayeredPane.MODAL_LAYER);   // กล่องคำตอบ
-        layerP.add(greenButton,     JLayeredPane.POPUP_LAYER);   //ปุ่มส่ง
+        layerP.add(bgLabel, JLayeredPane.DEFAULT_LAYER); // พื้นหลัง
+        layerP.add(billImgLabel, JLayeredPane.PALETTE_LAYER); //รูปบิล
+        layerP.add(inputField, JLayeredPane.MODAL_LAYER);   // กล่องคำตอบ
+        layerP.add(greenButton, JLayeredPane.POPUP_LAYER);   //ปุ่มส่ง
     }
 
 
@@ -117,9 +125,9 @@ public class guessBill extends Minigame {
     }
 
     //public static void main(String[] args) throws Exception {
-        //guessBill g = new guessBill();
-        //SwingUtilities.invokeAndWait(() -> g.play());
-        //System.out.println("ผ่าน: " + g.getPass());
+    //    guessBill g = new guessBill();
+    //    SwingUtilities.invokeAndWait(() -> g.play());
+    //    System.out.println("ผ่าน: " + g.getPass());
     //}
     // public static void main(String[] args) throws Exception {
     //     guessBill g = new guessBill();

@@ -53,22 +53,27 @@ public class jigsaw extends Minigame {
     }
 
     private void setupUI() {
+        Image bgImg;
+        JLabel bgLabel;
+        BufferedImage fullImage;
+        BufferedImage[] pieceImages;
+        JButton submitBtn;
+
         //Background 
-        Image bgImg = new ImageIcon(getClass().getResource("ImageMinigame/IMG_4221.PNG"))
+        bgImg = new ImageIcon(getClass().getResource("ImageMinigame/IMG_4221.PNG"))
                 .getImage().getScaledInstance(W, H, Image.SCALE_SMOOTH);
-        JLabel bgLabel = new JLabel(new ImageIcon(bgImg));
+        bgLabel = new JLabel(new ImageIcon(bgImg));
         bgLabel.setBounds(0, 0, W, H);
 
         // ตัดรูปjigsaw
-        BufferedImage fullImage = loadPlaceholderImage();
-        BufferedImage[] pieceImages = cutImage(fullImage);
+        fullImage = loadPlaceholderImage();
+        pieceImages = cutImage(fullImage);
 
         //init slotPiece
         slotPiece = new int[ROWS * COLS];
         Arrays.fill(slotPiece, -1);
 
-        
-        //setup slot )
+        //setup ช่องวาง
         slots = new JLabel[ROWS * COLS];
         for (int i = 0; i < slots.length; i++) {
             int row = i / COLS, col = i % COLS;
@@ -83,7 +88,7 @@ public class jigsaw extends Minigame {
             );
         }
 
-        //Pieces
+        //สร้างPieces แล้วสุ่มลำดับชิ้น 
         pieces = new JLabel[ROWS * COLS];
         pieceIndex = new int[ROWS * COLS];
 
@@ -107,7 +112,7 @@ public class jigsaw extends Minigame {
         }
 
         //Submit Button
-        JButton submitBtn = new JButton();
+        submitBtn = new JButton();
         submitBtn.setContentAreaFilled(false);
         submitBtn.setBorderPainted(false);
         submitBtn.setFocusPainted(false);
@@ -187,6 +192,7 @@ public class jigsaw extends Minigame {
         });
     }
 
+    //หาตำแหน่งช่องว่างที่ใกล้ที่สุด
     private int findNearestFreeSlot(int x, int y) {
         int nearest = -1, minDist = Integer.MAX_VALUE;
         for (int s = 0; s < slots.length; s++) {
@@ -203,16 +209,16 @@ public class jigsaw extends Minigame {
         return nearest;
     }
 
+    // ถ้าไม่มี slot ว่างใกล้ๆ piece อยู่ที่เดิม (ไม่ล็อค)
     private void trySnapToNearest(JLabel piece, int pieceIdx) {
         int nearest = findNearestFreeSlot(piece.getX(), piece.getY());
         if (nearest != -1) {
             piece.setLocation(slots[nearest].getX(), slots[nearest].getY());
             slotPiece[nearest] = pieceIdx; // จอง slot
         }
-        // ถ้าไม่มี slot ว่างใกล้ๆ piece อยู่ที่เดิม (ไม่ล็อค)
     }
 
-// checkWin จากปุ่มส่ง
+    // checkWin จากปุ่มส่ง
     private void checkWin() {
         for (int i = 0; i < pieces.length; i++) {
             JLabel correctSlot = slots[pieceIndex[i]];
@@ -223,11 +229,11 @@ public class jigsaw extends Minigame {
                 return;
             }
         }
-        this.isPass = true;            // ถูกทุกชิ้น ส่ง true กลับ
+        this.isPass = true; // ถูกทุกชิ้น ส่ง true กลับ
         dialog.dispose();
     }
 
-    // Helpers
+    //ปรับขนาดรูปให้พอดีกับตาราง
     private BufferedImage loadPlaceholderImage() {
         try {
             BufferedImage img = javax.imageio.ImageIO.read(
@@ -248,6 +254,7 @@ public class jigsaw extends Minigame {
         }
     }
 
+    //ตัดชิ้นส่วนjigsaw
     private BufferedImage[] cutImage(BufferedImage full) {
         BufferedImage[] result = new BufferedImage[ROWS * COLS];
         for (int row = 0; row < ROWS; row++) {
@@ -266,8 +273,9 @@ public class jigsaw extends Minigame {
     //     System.out.println("ผ่าน: " + g.getPass());
     // }
     //public static void main(String[] args) throws Exception {
-        //jigsaw g = new jigsaw();
-        //SwingUtilities.invokeAndWait(() -> g.play());
-        //System.out.println("ผ่าน: " + g.getPass());
-    }
+     //   jigsaw g = new jigsaw();
+    //    SwingUtilities.invokeAndWait(() -> g.play());
+    //    System.out.println("ผ่าน: " + g.getPass());
+    //}
+}
 
