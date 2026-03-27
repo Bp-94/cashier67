@@ -265,4 +265,9 @@ public class jigsaw extends Minigame {
     //     SwingUtilities.invokeAndWait(() -> g.play());
     //     System.out.println("ผ่าน: " + g.getPass());
     // }
-}
+    //public static void main(String[] args) throws Exception {
+        //jigsaw g = new jigsaw();
+        //SwingUtilities.invokeAndWait(() -> g.play());
+        //System.out.println("ผ่าน: " + g.getPass());
+    }
+

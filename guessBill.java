@@ -116,6 +116,11 @@ public class guessBill extends Minigame {
         return inputField.getText().trim().equals(currentAnswer);
     }
 
+    //public static void main(String[] args) throws Exception {
+        //guessBill g = new guessBill();
+        //SwingUtilities.invokeAndWait(() -> g.play());
+        //System.out.println("ผ่าน: " + g.getPass());
+    //}
     // public static void main(String[] args) throws Exception {
     //     guessBill g = new guessBill();
     //     SwingUtilities.invokeAndWait(() -> g.play());
