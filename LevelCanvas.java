@@ -39,7 +39,6 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         
     ;
     Image presentcustomerImg;
-    // Image goodsList = new ImageIcon("Asset/ListGoods.png");
 
     private static JTextField txt = new JTextField();
     private static JTextField txtAns =  new JTextField();
@@ -100,15 +99,12 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
 
     Rectangle IDRect = new Rectangle(510,360,100,50);
 
-    // Rectangle closeCouponRect = new Rectangle(600, 622, 205, 75);
-    // Rectangle notSell = new Rectangle(490, 620, 225, 75);
-    // Rectangle sell = new Rectangle(830, 620, 207, 75);
+    
 
     public LevelCanvas(Game game) {
         timerLogic = new MyTimer(game.getTime());
         timerLogic.start();
-        // presentcustomer = game.getCustomer();
-        // presentcustomerImg = new ImageIcon(presentcustomer.getimagePath()).getImage();
+        
         // 2. สร้าง Thread แยกเพื่อให้นาฬิกาวิ่งเลนขนาน (หน้าจอจะได้ไม่ค้าง)
         this.game = game;
         // 3. สร้าง Timer ตัวเล็กๆ เพื่อสั่งให้หน้าจอ "วาดใหม่" (Repaint) ทุกๆ 0.1 วินาที
@@ -429,9 +425,12 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         g2.setColor(Color.WHITE);
         
         g2.drawString(String.valueOf(game.getDebt()), dx, dy);
-        g2.setColor(Color.RED);
+
+
+        // เอาไว้ดีบัคเช็คตำแหน่งปุ่มต่างๆ
+        // g2.setColor(Color.RED);
         
-        g2.draw(btn7);
+        // g2.draw(btn7);
         // g2.draw(scale(btn8));
         // g2.draw(scale(btn9));
         // g2.draw(scale(btnDiv));
