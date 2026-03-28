@@ -6,33 +6,24 @@ import java.util.List;
 import java.util.Random;
 
 public class Game extends JFrame implements Observer {
-    private boolean transitioning = false;
-    private Font customFont;
 
     private static final int PLAYING = 0;
-    private static final int WIN = 1;
-    private static final int LOSING = 2;
-    private static final int TRANSITION = 3;
-
-    GameLoop loop;
-
-
-
-    private int time;
-
+    private static final int TRANSITION = 1;
     private int gameState;
-
-    private Customer presentCustomer,leavingCustomer;
-
+    
+    private GameLoop loop;
     private LevelCanvas levelCanvas;
-
-    private int level;
-
-    private double debt;
-
+    private Sound bgm = new Sound();
     private MinigameScheduler mgScheduler;
 
-    private Sound bgm = new Sound();
+    private Customer presentCustomer,leavingCustomer;
+    private int time,level;
+    private double debt;
+
+
+
+
+    
     // private List<Minigame> games = List.of(
     //     new guessGoods(),
     //     new guessBill(),
@@ -56,99 +47,59 @@ public class Game extends JFrame implements Observer {
         
     };
     public Game(double debt,int time,int level){
-        bgm.play("bgm.wav");
         this.debt = debt;
         this.time = time;
         this.level = level;
-        presentCustomer = new Customer(this);
+
+        bgm.play("bgm.wav");
         gameState = PLAYING;
+        presentCustomer = new Customer(this);
+
         setSize(1920,1080);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setExtendedState(JFrame.MAXIMIZED_BOTH);
+        
         levelCanvas = new LevelCanvas(this);
         levelCanvas.setCurrentCustomer(presentCustomer);
         levelCanvas.setBounds(0,0,1920,1080);
+        add(levelCanvas);
+        
+        loop = new GameLoop(this);
+        new Thread(loop).start();
+        
+        mgScheduler = new MinigameScheduler(this);
+        mgScheduler.start(); 
+
+        setVisible(true);
         // Customer = new JLabel(new ImageIcon("Assets/CustomerBank.png"));
         // customer.setBounds(0,0,192)
         // PresentLevel = new JLabel(new ImageIcon("Assets/Level 1.png"));
         // TableAndCalculator = new JLabel(new ImageIcon("Assets/Calculator_Table_ListGoods.png"));
         // TableAndCalculator.setBounds(0,0,1920,1080);
-
-
-
-        
-        
-        add(levelCanvas);
-        
-
         // add(TableAndCalculator);
         // setComponentZOrder(PresentLevel, 3);
         // setComponentZOrder(Customer, 3);
-       
         // setComponentZOrder(TableAndCalculator, 0);
-        loop = new GameLoop(this);
-        new Thread(loop).start();
-
-        mgScheduler = new MinigameScheduler(this);
-        mgScheduler.start(); 
-        setVisible(true);
-        System.out.println(getWidth() + " " + getHeight());
     }
     
-    public Goods[] getGoodsList() {
-    return goodsList;
-    }
-    // public void setGoodsLists(Goods[] goodsList){
-    //     this.goodsList = goodsList;
-    // }
-    public LevelCanvas getLevelCanvas(){
-        return levelCanvas;
-    }
-    public int getLevel(){
-        return level;
-    }
-    public Customer getCustomer(){
-        return presentCustomer;
-    }
-    public void setdebt(double debt) {
-        this.debt = debt;
-    }
-    public double getDebt() {
-        return debt;
-    }
-    public void CaluclulateMoney(){
-
-    }
-    public boolean isWinOrLose(int debt){
-        if (debt <= 0){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-
+    
+    
+    
     
     @Override
     public void update(String message) {
         if (message.equals("CustomerLeft")) {
-
-            
             Customer newCustomer = new Customer(this);
-
-        // บอก Canvas ว่าคนเก่าคือ leaving
+            // บอก Canvas ว่าคนเก่าคือ leaving
             levelCanvas.setLeavingCustomer(presentCustomer);
-
             // เปลี่ยน current
             presentCustomer = newCustomer;
-
             // ส่งให้ canvas
             levelCanvas.setCurrentCustomer(presentCustomer);
             return;
         }
         else if (message.equals("ไม่ขาย:ผิด") || message.equals("ขาย:ผิด")){
-            System.out.println("trigger3");
             int newTime = levelCanvas.getTimer().getTotalSeconds() - 10;
             if (newTime < 0) newTime = 0;
             levelCanvas.getTimer().setTime(newTime);
@@ -157,19 +108,14 @@ public class Game extends JFrame implements Observer {
             presentCustomer.leave();
         }
         else if(message.equals("ไม่ขาย:ถูก")){
-            System.out.println("trigger2");
-            
             leavingCustomer = presentCustomer;
             presentCustomer.leave();
         }
         try {
             double playerInput = Double.parseDouble(message);
-            // if (presentCustomer.getAge() < 20){
-                
-            // }
             Customer c = presentCustomer;
             if (c.getX() == c.getTargetX()){
-
+                
                 if (c.checkPrice(playerInput)) {
                     System.out.println("triggercheckprice");
                     this.setdebt(this.getDebt() - c.getPayment());
@@ -194,56 +140,40 @@ public class Game extends JFrame implements Observer {
     }
     
     public void nextLevel() {
-        bgm.stop();
-        mgScheduler.stop();
-        levelCanvas.getAninmation().stopAnimation();
-        loop.stopLoop();
-        levelCanvas.getTimer().stopTime();
         dispose();
+        
         level++;
-
         debt = 1000;
-
         int time;
         
         if (level == 2) time = 140;
         else if (level == 3) time = 130;
         else time = 120;
-
+        
         new Game(debt,time,level);
-
-        // gameState = PLAYING;
-
-        // levelCanvas.getTimer().start();
     }
+    
     public void updateGame() {
         if (gameState != PLAYING) return;
-
+        
         if (levelCanvas.getTimer().getTotalSeconds() <= 0) {
             loseGame();
         }
-
+        
         if (debt < 0) {
             winGame();
         }
     }
     public void winGame() {
-        bgm.stop();
-        mgScheduler.stop();
+        
         if (gameState != PLAYING) {
-        return;
-        }
-
-        if (transitioning == true) {
             return;
-        } else {
-            transitioning = true;
         }
-
+        
         gameState = TRANSITION;
-
-        levelCanvas.getTimer().stopTime();
-
+        
+        stopAll();
+        
         levelCanvas.showEndDialog(true);
         if(level < 5){
 
@@ -254,37 +184,55 @@ public class Game extends JFrame implements Observer {
             new HomeScreen();
         }
     }
+    
+    public void loseGame() {
+        
+        if (gameState != PLAYING) {
+            return;
+        }
+        
+        gameState = TRANSITION;
+        
+        stopAll();
+        
+        levelCanvas.showEndDialog(false);
+        
+        dispose();
+        new HomeScreen();
+    }
+    private void stopAll() {
+        bgm.stop();
+        mgScheduler.stop();
+        loop.stopLoop();
+        levelCanvas.getAninmation().stopAnimation();
+        levelCanvas.getTimer().stopTime();
+    }
+    public Goods[] getGoodsList() {
+    return goodsList;
+    }
+    public LevelCanvas getLevelCanvas(){
+        return levelCanvas;
+    }
+    public int getLevel(){
+        return level;
+    }
+    public Customer getCustomer(){
+        return presentCustomer;
+    }
+    public double getDebt() {
+        return debt;
+    }
+    public void setdebt(double debt) {
+        this.debt = debt;
+    }
     public Customer getLeavingCustomer(){
         return leavingCustomer;
     }
     public int getTime(){
         return time;
     }
-
-    public void loseGame() {
-        bgm.stop();
-        mgScheduler.stop();
-        if (gameState != PLAYING) {
-            return;
-        }
-
-        if (transitioning == true) {
-            return;
-        } else {
-            transitioning = true;
-        }
-
-        gameState = TRANSITION;
-
-        levelCanvas.getTimer().stopTime();
-
-        levelCanvas.showEndDialog(false);
-
-        dispose();
-        new HomeScreen();
-    }
     public boolean isMinigameActive() {
-    return mgScheduler != null && mgScheduler.isActive();
+        return mgScheduler != null && mgScheduler.isActive();
 }
     // public static void main(String[] args){
     //     Game currentGame = new Game();
