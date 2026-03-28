@@ -4,13 +4,14 @@ import java.util.*;
 import java.util.List;
 import javax.swing.*;
 
-public class guessBill extends Minigame {
+public class guessBill extends Minigame implements ActionListener{
 
     private JDialog dialog;
     private JLayeredPane layerP;
     private JTextField inputField;
     private JButton greenButton;
     private JLabel billImgLabel;
+    private javax.swing.Timer timer;
 
     private Map<String, String> gameData;
     private List<String> keys;
@@ -22,7 +23,6 @@ public class guessBill extends Minigame {
 
     // constructor
     public guessBill() {
-
         // รูป -> คำตอบที่ถูกต้อง
         gameData = new HashMap<>();
         gameData.put("ImageMinigame/1.PNG", "672894");
@@ -60,7 +60,6 @@ public class guessBill extends Minigame {
         Image bgImg;
         JLabel bgLabel;
         Image billImg;
-        javax.swing.Timer timer;
         java.net.URL imgURL;
 
         // Background
@@ -78,12 +77,7 @@ public class guessBill extends Minigame {
         billImgLabel.setBounds((W - 430) / 2, 170, 430, 430);
 
         // ซ่อนรูปหลัง 2 วินาที
-        timer = new javax.swing.Timer(2000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                billImgLabel.setIcon(null);
-            }
-        });
+        timer = new javax.swing.Timer(2000, this);
         timer.setRepeats(false);
         timer.start();
 
@@ -94,10 +88,7 @@ public class guessBill extends Minigame {
         inputField.setOpaque(false);
         inputField.setBorder(null);
         inputField.setBounds(540, 560, 200, 60);
-        inputField.addActionListener(e -> {
-            this.isPass = checkInput();
-            dialog.dispose();
-        });
+        inputField.addActionListener(this);
 
         // ปุ่มใสทับปุ่มสีเขียว
         greenButton = new JButton();
@@ -105,10 +96,7 @@ public class guessBill extends Minigame {
         greenButton.setBorderPainted(false);
         greenButton.setFocusPainted(false);
         greenButton.setBounds(770, 555, 70, 70);
-        greenButton.addActionListener(e -> {
-            this.isPass = checkInput();
-            dialog.dispose();
-        });
+        greenButton.addActionListener(this);
 
         layerP = new JLayeredPane();
         layerP.setPreferredSize(new Dimension(W, H));
@@ -117,8 +105,19 @@ public class guessBill extends Minigame {
         layerP.add(billImgLabel, JLayeredPane.PALETTE_LAYER); //รูปบิล
         layerP.add(inputField, JLayeredPane.MODAL_LAYER);   // กล่องคำตอบ
         layerP.add(greenButton, JLayeredPane.POPUP_LAYER);   //ปุ่มส่ง
+
     }
 
+     @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == timer) {
+            billImgLabel.setIcon(null);
+
+        } else if (e.getSource() == inputField || e.getSource() == greenButton) {
+            this.isPass = checkInput();
+            dialog.dispose();
+        }
+    }
 
     public boolean checkInput() {
         return inputField.getText().trim().equals(currentAnswer);

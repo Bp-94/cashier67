@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.List;
 import javax.swing.*;
 
-public class jigsaw extends Minigame {
+public class jigsaw extends Minigame implements ActionListener, MouseListener, MouseMotionListener{
 
     private JDialog dialog;
     private JLayeredPane layerP;
@@ -15,6 +15,12 @@ public class jigsaw extends Minigame {
     private int[] pieceIndex;
     private int[] slotPiece;
     private String selectedPuzzle;
+    private JButton submitBtn; 
+
+    private int[] dragOffset = new int[2];
+    private int lastHighlightedSlot = -1;
+    private int draggingPieceIdx = -1;
+    private JLabel draggingPiece = null;
 
     private static final int W = 1280;
     private static final int H = 720;
@@ -57,11 +63,9 @@ public class jigsaw extends Minigame {
         JLabel bgLabel;
         BufferedImage fullImage;
         BufferedImage[] pieceImages;
-        JButton submitBtn;
 
         //Background 
-        bgImg = new ImageIcon(getClass().getResource("ImageMinigame/IMG_4221.PNG"))
-                .getImage().getScaledInstance(W, H, Image.SCALE_SMOOTH);
+        bgImg = new ImageIcon(getClass().getResource("ImageMinigame/IMG_4221.PNG")).getImage().getScaledInstance(W, H, Image.SCALE_SMOOTH);
         bgLabel = new JLabel(new ImageIcon(bgImg));
         bgLabel.setBounds(0, 0, W, H);
 
@@ -108,7 +112,8 @@ public class jigsaw extends Minigame {
                     PIECE_START_Y + row * PIECE_SIZE,
                     PIECE_SIZE, PIECE_SIZE
             );
-            addDragListener(pieces[i], i);
+            pieces[i].addMouseListener(this);
+            pieces[i].addMouseMotionListener(this);
         }
 
         //Submit Button
@@ -117,7 +122,7 @@ public class jigsaw extends Minigame {
         submitBtn.setBorderPainted(false);
         submitBtn.setFocusPainted(false);
         submitBtn.setBounds(514, 559, 242, 64);
-        submitBtn.addActionListener(e -> checkWin());
+        submitBtn.addActionListener(this);
 
         //LayeredPane
         layerP = new JLayeredPane();
@@ -132,64 +137,6 @@ public class jigsaw extends Minigame {
             layerP.add(piece, JLayeredPane.MODAL_LAYER);
         }
         layerP.add(submitBtn, JLayeredPane.POPUP_LAYER); // ← หลัง new layerP เสมอ
-    }
-
-    // Drag & Snap
-    private void addDragListener(JLabel piece, int pieceIdx) {
-        int[] off = new int[2];
-        int[] lastHighlightedSlot = new int[]{-1};
-
-        piece.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                off[0] = e.getX();
-                off[1] = e.getY();
-                layerP.setLayer(piece, JLayeredPane.DRAG_LAYER);
-
-                // ปล่อย slot ที่เคยอยู่ เมื่อหยิบขึ้นมา
-                for (int s = 0; s < slots.length; s++) {
-                    if (slotPiece[s] == pieceIdx) {
-                        slotPiece[s] = -1;
-                        break;
-                    }
-                }
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                // Reset highlight
-                if (lastHighlightedSlot[0] != -1) {
-                    slots[lastHighlightedSlot[0]].setBorder(
-                            BorderFactory.createLineBorder(new Color(200, 200, 255), 2));
-                    lastHighlightedSlot[0] = -1;
-                }
-                trySnapToNearest(piece, pieceIdx); // snap ไป slot ว่างที่ใกล้สุด
-                layerP.setLayer(piece, JLayeredPane.MODAL_LAYER);
-            }
-        });
-
-        piece.addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                int newX = piece.getX() + e.getX() - off[0];
-                int newY = piece.getY() + e.getY() - off[1];
-                piece.setLocation(newX, newY);
-
-                // Highlight slot วางที่ใกล้สุด (เปลี่ยนเฉพาะตอน state เปลี่ยน)
-                int nearest = findNearestFreeSlot(newX, newY);
-                if (nearest != lastHighlightedSlot[0]) {
-                    if (lastHighlightedSlot[0] != -1) {
-                        slots[lastHighlightedSlot[0]].setBorder(
-                                BorderFactory.createLineBorder(new Color(200, 200, 255), 2));
-                    }
-                    if (nearest != -1) {
-                        slots[nearest].setBorder(
-                                BorderFactory.createLineBorder(Color.YELLOW, 3));
-                    }
-                    lastHighlightedSlot[0] = nearest;
-                }
-            }
-        });
     }
 
     //หาตำแหน่งช่องว่างที่ใกล้ที่สุด
@@ -216,21 +163,6 @@ public class jigsaw extends Minigame {
             piece.setLocation(slots[nearest].getX(), slots[nearest].getY());
             slotPiece[nearest] = pieceIdx; // จอง slot
         }
-    }
-
-    // checkWin จากปุ่มส่ง
-    private void checkWin() {
-        for (int i = 0; i < pieces.length; i++) {
-            JLabel correctSlot = slots[pieceIndex[i]];
-            if (pieces[i].getX() != correctSlot.getX()
-                    || pieces[i].getY() != correctSlot.getY()) {
-                this.isPass = false;   // ผิด ส่ง false กลับ
-                dialog.dispose();
-                return;
-            }
-        }
-        this.isPass = true; // ถูกทุกชิ้น ส่ง true กลับ
-        dialog.dispose();
     }
 
     //ปรับขนาดรูปให้พอดีกับตาราง
@@ -267,11 +199,93 @@ public class jigsaw extends Minigame {
         return result;
     }
 
-    // public static void main(String[] args) throws Exception {
-    //     jigsaw g = new jigsaw();
-    //     SwingUtilities.invokeAndWait(() -> g.play());
-    //     System.out.println("ผ่าน: " + g.getPass());
-    // }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == submitBtn) {
+            checkWin();
+    }
+}
+
+     // MouseListener
+    @Override
+    public void mousePressed(MouseEvent e) {
+        draggingPiece = (JLabel) e.getSource();
+        dragOffset[0] = e.getX();
+        dragOffset[1] = e.getY();
+        // หา index ของชิ้นส่วนที่กด
+        for (int i = 0; i < pieces.length; i++) {
+            if (pieces[i] == draggingPiece) {
+                draggingPieceIdx = i;
+                break;
+            }
+        }
+        layerP.setLayer(draggingPiece, JLayeredPane.DRAG_LAYER);
+        // วาง slot ที่เคยอยู่
+        for (int s = 0; s < slots.length; s++) {
+            if (slotPiece[s] == draggingPieceIdx) {
+                slotPiece[s] = -1;
+                break;
+            }
+        }
+    }
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (lastHighlightedSlot != -1) {
+            slots[lastHighlightedSlot].setBorder(
+                    BorderFactory.createLineBorder(new Color(200, 200, 255), 2));
+            lastHighlightedSlot = -1;
+        }
+        trySnapToNearest(draggingPiece, draggingPieceIdx);
+        layerP.setLayer(draggingPiece, JLayeredPane.MODAL_LAYER);
+        draggingPiece = null;
+        draggingPieceIdx = -1;
+    }
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        if (draggingPiece == null) return;
+        int newX = draggingPiece.getX() + e.getX() - dragOffset[0];
+        int newY = draggingPiece.getY() + e.getY() - dragOffset[1];
+        draggingPiece.setLocation(newX, newY);
+
+        int nearest = findNearestFreeSlot(newX, newY);
+        if (nearest != lastHighlightedSlot) {
+            if (lastHighlightedSlot != -1) {
+                slots[lastHighlightedSlot].setBorder(
+                        BorderFactory.createLineBorder(new Color(200, 200, 255), 2));
+            }
+            if (nearest != -1) {
+                slots[nearest].setBorder(
+                        BorderFactory.createLineBorder(Color.YELLOW, 3));
+            }
+            lastHighlightedSlot = nearest;
+        }
+    }
+    @Override public void mouseClicked(MouseEvent e) {}
+    @Override public void mouseEntered(MouseEvent e) {}
+    @Override public void mouseExited(MouseEvent e) {}
+    @Override public void mouseMoved(MouseEvent e) {}
+
+
+    // checkWin จากปุ่มส่ง
+    private void checkWin() {
+        for (int i = 0; i < pieces.length; i++) {
+            JLabel correctSlot = slots[pieceIndex[i]];
+            if (pieces[i].getX() != correctSlot.getX()
+                    || pieces[i].getY() != correctSlot.getY()) {
+                this.isPass = false;   // ผิด ส่ง false กลับ
+                dialog.dispose();
+                return;
+            }
+        }
+        this.isPass = true; // ถูกทุกชิ้น ส่ง true กลับ
+        dialog.dispose();
+    }
+
+    //public static void main(String[] args) throws Exception {
+    //    jigsaw g = new jigsaw();
+    //    SwingUtilities.invokeAndWait(() -> g.play());
+    //    System.out.println("ผ่าน: " + g.getPass());
+    //}
     //public static void main(String[] args) throws Exception {
      //   jigsaw g = new jigsaw();
     //    SwingUtilities.invokeAndWait(() -> g.play());
