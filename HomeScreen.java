@@ -48,7 +48,7 @@ public class HomeScreen implements MouseListener {
         resizeComponents();
     }
 
-    private void resizeComponents() {
+    public void resizeComponents() {
         int w = panel.getWidth();
         int h = panel.getHeight();
 

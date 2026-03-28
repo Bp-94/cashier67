@@ -143,6 +143,8 @@ public class Game extends JFrame implements Observer {
         if (gameState != PLAYING) {
             return;
         }
+        getLevelCanvas().getTxt().setText("");
+        getLevelCanvas().getTxtAns().setText("");
         gameState = TRANSITION;
         stopAll();
         levelCanvas.showEndDialog(true);
@@ -158,6 +160,8 @@ public class Game extends JFrame implements Observer {
         if (gameState != PLAYING) {
             return;
         }
+        getLevelCanvas().getTxt().setText("");
+        getLevelCanvas().getTxtAns().setText("");
         gameState = TRANSITION;
         stopAll();
         levelCanvas.showEndDialog(false);

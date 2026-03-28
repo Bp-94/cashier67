@@ -126,9 +126,6 @@ public class TutorialScreen implements MouseListener {
     @Override public void mouseEntered(MouseEvent e) {}
     @Override public void mouseExited(MouseEvent e) {}
 
-    public static void main(String[] args) {
-        new TutorialScreen();
-    }
 }
 class TutorialPanel extends JPanel {
     private Image bg;

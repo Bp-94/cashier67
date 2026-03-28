@@ -39,8 +39,8 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     private Image IDmini = new ImageIcon("CustomerImage/mini_ID.png").getImage(); 
     private Image presentcustomerImg;
     
-    private static JTextField txt = new JTextField();
-    private static JTextField txtAns =  new JTextField();
+    private JTextField txt = new JTextField();
+    private JTextField txtAns =  new JTextField();
     private JTextField currentFocus;
     
     private Customer currentCustomer;
@@ -673,6 +673,12 @@ public void mouseMoved(MouseEvent e) {
     }
     public MyTimer getTimer() { 
         return timerLogic; 
+    }
+    public JTextField getTxt(){
+        return txt;
+    }
+    public JTextField getTxtAns(){
+        return txtAns;
     }
     public AnimationLevel getAninmation(){
         return AnLe;
