@@ -12,7 +12,7 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
 
     private MyTimer timerLogic;
     private AnimationLevel AnLe;
-
+    
     
     private int currentY;
     private float Prongsai;
@@ -388,39 +388,13 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         // g2.draw(scale(notSell));
         // g2.draw(scale(wrongRect));
     }
-    public void showGoodListDialog() {
-                JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), true);
-                Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-                dialog.setSize(screen);
-                dialog.setUndecorated(true);
-                dialog.setBackground(new Color(0,0,0,50));
-                int w = (int)(screen.width * 0.5);
-                int h = (int)(w * 9.0 / 16);
-
-                Image img = new ImageIcon("Asset/ListGoods.png").getImage();
-                Image scaled = img.getScaledInstance(screen.width, screen.height, Image.SCALE_SMOOTH);
-                JLabel label = new JLabel(new ImageIcon(scaled));
-                dialog.add(label);
-                dialog.setLocationRelativeTo(null);
-                MouseAdapter closeEvent = new MouseAdapter() {
-                    public void mouseClicked(MouseEvent e) {
-                        dialog.dispose();
-                    }
-                };
-                
-                dialog.addMouseListener(closeEvent);
-                label.addMouseListener(closeEvent);
-                dialog.setVisible(true);
-                
-                
-            }
-                
-            // public static void main(String[] args){
-                
-            //     JFrame frame = new JFrame("CASHIER");
-            //     Font myFont = new Font("Serif", Font.PLAIN, 20);
-            
-            //     frame.setSize(1920,1080);
+    
+    // public static void main(String[] args){
+        
+    //     JFrame frame = new JFrame("CASHIER");
+    //     Font myFont = new Font("Serif", Font.PLAIN, 20);
+    
+    //     frame.setSize(1920,1080);
     //     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
     //     Calculator panel = new Calculator(new Game());
@@ -442,7 +416,7 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     //     panel.add(txtAns);
     //     panel.add(txt);
     //     frame.add(panel);
-        
+    
     //     frame.setLocationRelativeTo(null);
     //     frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
     //     frame.setVisible(true);
@@ -497,9 +471,9 @@ public void mousePressed(MouseEvent e) {
     } else if (btn4.contains(x, y)) {
         currentFocus.setText(currentFocus.getText()+"4");
     } else if (btn5.contains(x, y)) {
-                currentFocus.setText(currentFocus.getText()+"5");
-            } else if (btn6.contains(x, y)) {
-                currentFocus.setText(currentFocus.getText()+"6");
+        currentFocus.setText(currentFocus.getText()+"5");
+    } else if (btn6.contains(x, y)) {
+        currentFocus.setText(currentFocus.getText()+"6");
             } else if (btn1.contains(x, y)) {
                 currentFocus.setText(currentFocus.getText()+"1");
             } else if (btn2.contains(x, y)) {
@@ -533,17 +507,19 @@ public void mousePressed(MouseEvent e) {
             if (!dialogOpen && !currentCustomer.getEnter() && currentCustomer.haveCoupon() && couponminiRect.contains(x,y)){
                 dialogOpen = true;
                 showCoupon();
-            } 
+            }
             if (!dialogOpen && !currentCustomer.getEnter() && currentCustomer.haveAlcohol() && IDRect.contains(x,y)){
                 dialogOpen = true;
                 showID_Card();
             }
-
-
-        
+            
+            
+            
         // ของ IDCARD
         if (notSell != null && notSell.contains(e.getPoint())) {
             dialogOpen = false;
+            notSell = null; 
+            sell = null; 
             if (currentCustomer.getAge() > 20) {
                 this.notifyObserver("ไม่ขาย:ผิด");
             }else {
@@ -552,114 +528,146 @@ public void mousePressed(MouseEvent e) {
             dialog.dispose();
         }else if (sell != null && sell.contains(e.getPoint())) {
             dialogOpen = false;
+            sell    = null; 
+            notSell = null; 
             if (currentCustomer.getAge() < 20) {
                 this.notifyObserver("ขาย:ผิด");
             }else {
                 this.notifyObserver("ขาย:ถูก");
             }
             dialog.dispose();
-
+            
         }else if (closeCoupon != null && closeCoupon.contains(e.getPoint())) {
             dialogOpen = false;
+            closeCoupon = null;
             dialog.dispose();
         }
 }
-public void mouseClicked(MouseEvent e){
-    // System.out.println(e.getX() + "  " + e.getY());
-    // double scaleX = getWidth() / (double)baseWidth;
-    // double scaleY = getHeight() / (double)baseHeight;
+public void mouseClicked(MouseEvent e){}
+public void mouseReleased(MouseEvent e){}
+public void mouseEntered(MouseEvent e){}
+public void mouseExited(MouseEvent e){}
+@Override
+public void mouseDragged(MouseEvent e) {}
 
-    // int x = (int)(e.getX() / scaleX);
-    // int y = (int)(e.getY() / scaleY);
+@Override
+public void mouseMoved(MouseEvent e) {
+    double scaleX = getWidth() / (double)baseWidth;
+    double scaleY = getHeight() / (double)baseHeight;
     
-    // System.out.println("CLICK");
-    // double num1, num2;
-    // String op;
-    // if (currentFocus == null){currentFocus = txt;}
-    // if (btn7.contains(x,y)) {
-    //     currentFocus.setText(currentFocus.getText()+"7");
-    // } else if (btn8.contains(x, y)) {
-    //     currentFocus.setText(currentFocus.getText()+"8");
-    // } else if (btn9.contains(x, y)) {
-    //     currentFocus.setText(currentFocus.getText()+"9");
-    // } else if (btn4.contains(x, y)) {
-    //     currentFocus.setText(currentFocus.getText()+"4");
-    // } else if (btn5.contains(x, y)) {
-    //             currentFocus.setText(currentFocus.getText()+"5");
-    //         } else if (btn6.contains(x, y)) {
-    //             currentFocus.setText(currentFocus.getText()+"6");
-    //         } else if (btn1.contains(x, y)) {
-    //             currentFocus.setText(currentFocus.getText()+"1");
-    //         } else if (btn2.contains(x, y)) {
-    //             currentFocus.setText(currentFocus.getText()+"2");
-    //         } else if (btn3.contains(x, y)) {
-    //             currentFocus.setText(currentFocus.getText()+"3");
-    //         } else if (btn0.contains(x, y)) {
-    //             currentFocus.setText(currentFocus.getText()+"0");
-    //         } else if (clearBtn.contains(x, y)) {
-    //             txtAns.setText("");
-    //         } else if (game.getLevel() < 4 && btnAdd.contains(x, y)) {
-    //             currentFocus.setText(currentFocus.getText()+"+");
-    //         } else if (game.getLevel() < 4 && btnSub.contains(x, y)) {
-    //             currentFocus.setText(currentFocus.getText()+"-");
-    //         } else if (game.getLevel() < 4 && btnMul.contains(x, y)) {
-    //             currentFocus.setText(currentFocus.getText()+"*");
-    //         } else if (game.getLevel() < 4 && btnDiv.contains(x, y)) {
-    //             currentFocus.setText(currentFocus.getText()+"/");
-    //         } else if (game.getLevel() < 4 && btnEqual.contains(x, y)) {
-    //             double ans = calculate(currentFocus.getText());
-    //             int floorAns = (int)Math.floor(ans); // ปัดลงเสมอ
-    //             currentFocus.setText(String.valueOf(floorAns));
-    //         } else if (btnAns.contains(x, y)) {
-    //             this.notifyObserver(txtAns.getText()); // ส่งคำตอบไปให้ Game ตรวจสอบ
-    //         } else if (btnDot.contains(x, y)) {
-    //             currentFocus.setText(currentFocus.getText()+".");
-    //         } else if (goodsListRect.contains(x,y)){
-    //             showGoodListDialog();
-    //         } else if (currentCustomer.haveCoupon() && couponminiRect.contains(x,y)){
-    //             currentCustomer.showCoupon();
-    //         } else if (currentCustomer.haveAlcohol() && IDRect.contains(x,y)){
-    //             showID_Card();
-    //         }
-            
-
-        }
+    int x = (int)(e.getX() / scaleX);
+    int y = (int)(e.getY() / scaleY);
     
-    public void mouseReleased(MouseEvent e){}
-    public void mouseEntered(MouseEvent e){}
-    public void mouseExited(MouseEvent e){}
-    @Override
-    public void mouseDragged(MouseEvent e) {}
-    
-    @Override
-    public void mouseMoved(MouseEvent e) {
-        double scaleX = getWidth() / (double)baseWidth;
-        double scaleY = getHeight() / (double)baseHeight;
-
-        int x = (int)(e.getX() / scaleX);
-        int y = (int)(e.getY() / scaleY);
-        
-        if (btn7.contains(x, y) || (btn8.contains(x, y)) || (btn9.contains(x,y)) || (btn4.contains(x, y)) || (btn5.contains(x, y)) || (btn6.contains(x, y)) || (btn1.contains(x, y)) || (btn2.contains(x,y)) || (btn3.contains(x, y)) || (btn0.contains(x,y)) || (btnAdd.contains(x, y)) || (btnSub.contains(x, y)) || (btnMul.contains(x, y)) || (btnDiv.contains(x, y)) || (btnDot.contains(x, y)) || (btnEqual.contains(x, y)) || (clearBtn.contains(x,y)) || (btnAns.contains(x,y))) {
+    if (btn7.contains(x, y) || (btn8.contains(x, y)) || (btn9.contains(x,y)) || (btn4.contains(x, y)) || (btn5.contains(x, y)) || (btn6.contains(x, y)) || (btn1.contains(x, y)) || (btn2.contains(x,y)) || (btn3.contains(x, y)) || (btn0.contains(x,y)) || (btnAdd.contains(x, y)) || (btnSub.contains(x, y)) || (btnMul.contains(x, y)) || (btnDiv.contains(x, y)) || (btnDot.contains(x, y)) || (btnEqual.contains(x, y)) || (clearBtn.contains(x,y)) || (btnAns.contains(x,y))) {
             setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         } else {
             setCursor(Cursor.getDefaultCursor());
         }
     }
+    public void showGoodListDialog() {
+                JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), true);
+                Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+                dialog.setSize(screen);
+                dialog.setUndecorated(true);
+                dialog.setBackground(new Color(0,0,0,50));
+    
+                Image img = new ImageIcon("Asset/ListGoods.png").getImage();
+                Image scaled = img.getScaledInstance(screen.width, screen.height, Image.SCALE_SMOOTH);
+                JLabel label = new JLabel(new ImageIcon(scaled));
+                dialog.add(label);
+                dialog.setLocationRelativeTo(null);
+    
+                MouseAdapter closeEvent = new MouseAdapter() {
+                    public void mouseClicked(MouseEvent e) {
+                        dialog.dispose();
+                    }
+                };
+                
+                dialog.addMouseListener(closeEvent);
+                label.addMouseListener(closeEvent);
+                dialog.setVisible(true);
+            }
+            public void showID_Card() {
+                
+            dialog = new JDialog(game, true);
+            dialog.setSize(game.getWidth() - 100, game.getHeight() - 100);
+            dialog.setLocationRelativeTo(game);
+            dialog.setUndecorated(true);
+            dialog.setBackground(new Color(0, 0, 0, 0));
+            ImageIcon icon = new ImageIcon("CustomerImage/ID" + currentCustomer.getAge() + ".png");
+            Image scaled = icon.getImage().getScaledInstance(dialog.getWidth(), dialog.getHeight(), Image.SCALE_SMOOTH);
+            JLabel show = new  JLabel(new ImageIcon(scaled));
+            show.setOpaque(false);
+            System.out.println(currentCustomer.getAge());
+            notSell = scale(new Rectangle(490, 620, 225, 75));
+            sell = scale(new Rectangle(830, 620, 207, 75));
+            show.addMouseListener(this);
+            dialog.add(show);
+            dialog.setVisible(true);
+            
+        }
+        public void showCoupon() {
+            //  เพื่อให้ถ้าเกิด กำลังโชว์คูปอง ปุ่ม ของ id card มันจะได้กดไม่ได้
+            notSell = null;
+            sell = null;
+            dialog = new JDialog(game, true);
+            dialog.setSize(game.getWidth() - 100, game.getHeight() - 100);
+            dialog.setLocationRelativeTo(game);
+            dialog.setUndecorated(true);
+            dialog.setBackground(new Color(0, 0, 0, 100));
+            ImageIcon icon = new ImageIcon("CustomerImage/Coupon" + (int) currentCustomer.getDiscount() + ".png");
+            Image scaled = icon.getImage().getScaledInstance(dialog.getWidth(), dialog.getHeight(), Image.SCALE_SMOOTH);
+            JLabel show = new  JLabel(new ImageIcon(scaled));
+            show.setOpaque(false);
+            closeCoupon = scale(new Rectangle(660, 605, 220, 75));
+            show.addMouseListener(this);
+            dialog.add(show);
+            
+            dialog.setVisible(true);
+        }
+        public void showEndDialog(boolean isWin) {
+            game.getMgScheduler().stop();
+            closeCoupon = null;
+            JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), true);
+            dialog.setSize(game.getWidth(), game.getHeight());
+            dialog.setUndecorated(true);
+            dialog.setBackground(new Color(0, 0, 0,251));
+    
+            String imgPath;
+            if (isWin && game.getLevel() != 5) {
+                imgPath = "Asset/win.png";
+            }else if(isWin && game.getLevel() == 5) {
+                imgPath = "Asset/congrat.png";
+            } 
+            else {
+                imgPath = "Asset/lose.png";
+            }
+    
+            Image img = new ImageIcon(imgPath).getImage();
+            JLabel label = new JLabel(new ImageIcon(img));
+            dialog.add(label);
+    
+            // ปิดอัตโนมัติ 4 วิ
+            new Timer(4000, e -> {
+                dialog.dispose();
+                
+            }).start();
+            dialog.setVisible(true);
+        }
     @Override
     public void remove(Observer observer) {
         observers.remove(observer);
     }
-    
+    @Override
+        public void add(Observer observer){
+            observers.add(observer);
+        }
     @Override
     public void notifyObserver(String message) {
         for (Observer observer : observers){
             observer.update(message);
         }
     }
-    @Override
-        public void add(Observer observer){
-            observers.add(observer);
-        }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -668,83 +676,6 @@ public void mouseClicked(MouseEvent e){
     }
     public MyTimer getTimer() { 
         return timerLogic; 
-    }
-        public void showID_Card() {
-            
-        dialog = new JDialog(game, true);
-        dialog.setSize(game.getWidth() - 100, game.getHeight() - 100);
-        dialog.setLocationRelativeTo(game);
-        dialog.setUndecorated(true);
-        dialog.setBackground(new Color(0, 0, 0, 0));
-        ImageIcon icon = new ImageIcon("CustomerImage/ID" + currentCustomer.getAge() + ".png");
-        Image scaled = icon.getImage().getScaledInstance(dialog.getWidth(), dialog.getHeight(), Image.SCALE_SMOOTH);
-        JLabel show = new  JLabel(new ImageIcon(scaled));
-        show.setOpaque(false);
-        System.out.println(currentCustomer.getAge());
-        notSell = scale(new Rectangle(490, 620, 225, 75));
-        sell = scale(new Rectangle(830, 620, 207, 75));
-        show.addMouseListener(this);
-        dialog.add(show);
-        dialog.setVisible(true);
-        
-    }
-    public void showCoupon() {
-
-        //  เพื่อให้ถ้าเกิด กำลังโชว์คูปอง ปุ่ม ของ id card มันจะได้กดไม่ได้
-        notSell = null;
-        sell = null;
-        dialog = new JDialog(game, true);
-        dialog.setSize(game.getWidth() - 100, game.getHeight() - 100);
-        dialog.setLocationRelativeTo(game);
-        dialog.setUndecorated(true);
-        dialog.setBackground(new Color(0, 0, 0, 100));
-        ImageIcon icon = new ImageIcon("CustomerImage/Coupon" + (int) currentCustomer.getDiscount() + ".png");
-        Image scaled = icon.getImage().getScaledInstance(dialog.getWidth(), dialog.getHeight(), Image.SCALE_SMOOTH);
-        JLabel show = new  JLabel(new ImageIcon(scaled));
-        show.setOpaque(false);
-        closeCoupon = scale(new Rectangle(660, 605, 220, 75));
-        show.addMouseListener(this);
-        dialog.add(show);
-        
-        dialog.setVisible(true);
-    }
-
-    public void showEndDialog(boolean isWin) {
-        closeCoupon = null;
-        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), true);
-        dialog.setSize(game.getWidth(), game.getHeight());
-        dialog.setUndecorated(true);
-        dialog.setBackground(new Color(0, 0, 0,251));
-
-        String imgPath;
-        if (isWin && game.getLevel() != 5) {
-            imgPath = "Asset/win.png";
-
-        }else if(isWin && game.getLevel() == 5) {
-            imgPath = "Asset/congrat.png";
-            
-        } 
-        
-        else {
-            imgPath = "Asset/lose.png";
-        }
-
-        Image img = new ImageIcon(imgPath).getImage();
-        JLabel label = new JLabel(new ImageIcon(img));
-        dialog.add(label);
-
-        
-
-        // ⏱️ ปิดอัตโนมัติ 4 วิ
-        new Timer(4000, e -> {
-            dialog.dispose();
-            
-        }).start();
-        
-        dialog.setVisible(true);
-    }
-    public void setTimer(MyTimer timer) {
-        this.timerLogic = timer;
     }
     public AnimationLevel getAninmation(){
         return AnLe;

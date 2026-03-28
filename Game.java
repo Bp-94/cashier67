@@ -233,7 +233,10 @@ public class Game extends JFrame implements Observer {
     }
     public boolean isMinigameActive() {
         return mgScheduler != null && mgScheduler.isActive();
-}
+    }
+    public MinigameScheduler getMgScheduler() {
+        return mgScheduler;
+    }
     // public static void main(String[] args){
     //     Game currentGame = new Game();
     //     currentGame.isGameEnd(0, 0, currentGame);

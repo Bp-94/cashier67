@@ -45,7 +45,7 @@ public class Customer implements Obserable, Runnable, MouseListener {
             int ages[] = {14,18,19,21,25};
             age = ages[random.nextInt(ages.length)];
         }else {
-            haveCoupon = random.nextDouble() < 0.3; //มีโอกาส 30%
+            haveCoupon = random.nextDouble() < 0.2; //มีโอกาส 30%
             if (haveCoupon) {
                 int discounts[] = {25, 50};
                 discount = discounts[random.nextInt(discounts.length)];

@@ -56,7 +56,7 @@ public class MinigameScheduler {
         if (game.getLevel() <= 3) {
         // ด่าน 1-3 สุ่มแค่ 3 อัน (ไม่มี guessGoods)
         switch (random.nextInt(3)) {
-            case 0:  return new guessPrice(game);
+            case 0:  return new guessGoods(game);
             case 1:  return new guessBill(game);
             default: return new jigsaw(game);
         }
