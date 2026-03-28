@@ -8,8 +8,8 @@ public class MinigameScheduler {
     private final Random random;
     private boolean minigameActive = false;
     private boolean stopped = false;
-    private static final int INTERVAL_MS = 20_000; // ทุก 20 วิ
-    private static final double CHANCE    = 0.3;    // โอกาส 50%
+    private static final int INTERVAL_MS = 25_000; // ทุก 20 วิ
+    private static final double CHANCE    = 0.2;    // โอกาส 50%
     
 
     public MinigameScheduler(Game game) {

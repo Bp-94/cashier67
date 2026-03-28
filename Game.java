@@ -72,15 +72,6 @@ public class Game extends JFrame implements Observer {
         mgScheduler.start(); 
 
         setVisible(true);
-        // Customer = new JLabel(new ImageIcon("Assets/CustomerBank.png"));
-        // customer.setBounds(0,0,192)
-        // PresentLevel = new JLabel(new ImageIcon("Assets/Level 1.png"));
-        // TableAndCalculator = new JLabel(new ImageIcon("Assets/Calculator_Table_ListGoods.png"));
-        // TableAndCalculator.setBounds(0,0,1920,1080);
-        // add(TableAndCalculator);
-        // setComponentZOrder(PresentLevel, 3);
-        // setComponentZOrder(Customer, 3);
-        // setComponentZOrder(TableAndCalculator, 0);
     }
     
     
@@ -115,7 +106,6 @@ public class Game extends JFrame implements Observer {
             double playerInput = Double.parseDouble(message);
             Customer c = presentCustomer;
             if (c.getX() == c.getTargetX()){
-                
                 if (c.checkPrice(playerInput)) {
                     System.out.println("triggercheckprice");
                     this.setdebt(this.getDebt() - c.getPayment());
@@ -138,6 +128,42 @@ public class Game extends JFrame implements Observer {
         }catch (NumberFormatException e) {}
         
     }
+    public void updateGame() {
+        if (gameState != PLAYING) return;
+        
+        if (levelCanvas.getTimer().getTotalSeconds() <= 0) {
+            loseGame();
+        }
+        
+        if (debt < 0) {
+            winGame();
+        }
+    }
+    public void winGame() {
+        if (gameState != PLAYING) {
+            return;
+        }
+        gameState = TRANSITION;
+        stopAll();
+        levelCanvas.showEndDialog(true);
+        if(level < 5){
+            nextLevel();
+        }
+        else{
+            dispose();
+            new HomeScreen();
+        }
+    }
+    public void loseGame() {
+        if (gameState != PLAYING) {
+            return;
+        }
+        gameState = TRANSITION;
+        stopAll();
+        levelCanvas.showEndDialog(false);
+        dispose();
+        new HomeScreen();
+    }
     
     public void nextLevel() {
         dispose();
@@ -153,53 +179,6 @@ public class Game extends JFrame implements Observer {
         new Game(debt,time,level);
     }
     
-    public void updateGame() {
-        if (gameState != PLAYING) return;
-        
-        if (levelCanvas.getTimer().getTotalSeconds() <= 0) {
-            loseGame();
-        }
-        
-        if (debt < 0) {
-            winGame();
-        }
-    }
-    public void winGame() {
-        
-        if (gameState != PLAYING) {
-            return;
-        }
-        
-        gameState = TRANSITION;
-        
-        stopAll();
-        
-        levelCanvas.showEndDialog(true);
-        if(level < 5){
-
-            nextLevel();
-        }
-        else{
-            dispose();
-            new HomeScreen();
-        }
-    }
-    
-    public void loseGame() {
-        
-        if (gameState != PLAYING) {
-            return;
-        }
-        
-        gameState = TRANSITION;
-        
-        stopAll();
-        
-        levelCanvas.showEndDialog(false);
-        
-        dispose();
-        new HomeScreen();
-    }
     private void stopAll() {
         bgm.stop();
         mgScheduler.stop();

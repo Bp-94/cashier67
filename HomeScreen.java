@@ -53,7 +53,7 @@ public class HomeScreen implements MouseListener {
         int h = panel.getHeight();
 
         startW = (int)(w * 0.18);
-        startH = (int)(h * 0.13);
+        startH = (int)(h * 0.16);
         exitW = startW;
         exitH = startH;
 
@@ -69,7 +69,7 @@ public class HomeScreen implements MouseListener {
         //center
         int centerX = (w - startW) / 2;
         //Start(under logo)
-        int startY = (int)(h * 0.60);
+        int startY = (int)(h * 0.6);
 
         btnStart.setBounds(centerX, startY, startW, startH);
         btnExit.setBounds(centerX, startY + startH + 15, exitW, exitH);

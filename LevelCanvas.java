@@ -52,11 +52,6 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     private int baseWidth = 1537;
     private int baseHeight = 795;
 
-    public Observer Game;
-    int mouseX;
-    int mouseY;
-
-    
     private Game game;
     
 
@@ -498,6 +493,8 @@ public void mousePressed(MouseEvent e) {
                 currentFocus.setText(String.valueOf(floorAns));
             } else if (btnAns.contains(x, y)) {
                 this.notifyObserver(txtAns.getText()); // ส่งคำตอบไปให้ Game ตรวจสอบ
+                txtAns.setText("");
+                txt.setText("");
             } else if (btnDot.contains(x, y)) {
                 currentFocus.setText(currentFocus.getText()+".");
             } else if (goodsListRect.contains(x,y)){
