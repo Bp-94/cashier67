@@ -152,6 +152,7 @@ public class Game extends JFrame implements Observer {
             int newTime = levelCanvas.getTimer().getTotalSeconds() - 10;
             if (newTime < 0) newTime = 0;
             levelCanvas.getTimer().setTime(newTime);
+            getLevelCanvas().triggerMinusAnim();
             leavingCustomer = presentCustomer;
             presentCustomer.leave();
         }
@@ -176,6 +177,7 @@ public class Game extends JFrame implements Observer {
                     c.leave();
                 }
                 else if (!c.isLeaving() && c.getAge() < 20 && c.haveAlcohol()){
+                    getLevelCanvas().triggerMinusAnim();
                     System.out.println("trigger");
                     int newTime = levelCanvas.getTimer().getTotalSeconds() - 10;
                     if (newTime < 0) newTime = 0;

@@ -637,8 +637,8 @@ public void mouseClicked(MouseEvent e){
             
 
         }
-        
-        public void mouseReleased(MouseEvent e){}
+    
+    public void mouseReleased(MouseEvent e){}
     public void mouseEntered(MouseEvent e){}
     public void mouseExited(MouseEvent e){}
     
@@ -653,7 +653,7 @@ public void mouseClicked(MouseEvent e){
         int x = (int)(e.getX() / scaleX);
         int y = (int)(e.getY() / scaleY);
         
-        if (btn7.contains(x, y) || (btn8.contains(x, y)) || (btn9.contains(x,y)) || (btn4.contains(x, y)) || (btn5.contains(x, y)) || (btn6.contains(x, y)) || (btn1.contains(x, y)) || (btn2.contains(x,y)) || (btn3.contains(x, y)) || (btn0.contains(x,y)) || (btnAdd.contains(x, y)) || (btnSub.contains(x, y)) || (btnMul.contains(x, y)) || (btnDiv.contains(x, y)) || (btnDot.contains(x, y)) || (btnEqual.contains(x, y))) {
+        if (btn7.contains(x, y) || (btn8.contains(x, y)) || (btn9.contains(x,y)) || (btn4.contains(x, y)) || (btn5.contains(x, y)) || (btn6.contains(x, y)) || (btn1.contains(x, y)) || (btn2.contains(x,y)) || (btn3.contains(x, y)) || (btn0.contains(x,y)) || (btnAdd.contains(x, y)) || (btnSub.contains(x, y)) || (btnMul.contains(x, y)) || (btnDiv.contains(x, y)) || (btnDot.contains(x, y)) || (btnEqual.contains(x, y)) || (clearBtn.contains(x,y)) || (btnAns.contains(x,y))) {
             setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         } else {
             setCursor(Cursor.getDefaultCursor());
