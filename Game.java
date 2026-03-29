@@ -7,7 +7,6 @@ public class Game extends JFrame implements Observer {
     private int gameState;
 
     private boolean runningMinigame = true;
-    
     private GameLoop loop;
     private LevelCanvas levelCanvas;
     private Sound bgm = new Sound();

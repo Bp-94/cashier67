@@ -199,6 +199,7 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
             (int)(base.height * scaleY)
         );
     }
+
     public Rectangle scale(Rectangle r){
         
         double scaleX = getWidth()/(double)baseWidth;
@@ -211,7 +212,7 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
             (int)(r.height*scaleY)
         );
     }
-    
+
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;

@@ -172,7 +172,7 @@ public class Customer implements Obserable, Runnable {
     @Override
     public void remove(Observer observer) {
         observers.remove(observer); 
-    } 
+    }
     @Override
     public void notifyObserver(String message) {
         for (Observer observer : observers){

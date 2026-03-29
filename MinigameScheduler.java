@@ -8,7 +8,6 @@ public class MinigameScheduler {
     private final Random random;
     private boolean minigameActive = false;
     private boolean stopped = false;
-    private boolean running = true;
     private static final int INTERVAL_MS = 20000; 
     private static final double CHANCE    = 0.25;    
     
