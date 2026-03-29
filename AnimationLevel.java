@@ -1,10 +1,7 @@
-import java.awt.*;
-import javax.swing.*;
 public class AnimationLevel implements Runnable {
     private LevelCanvas panel;
     private int currentY;
     private float Prongsai;
-    private boolean running;
     public AnimationLevel(LevelCanvas f) {
         panel = f;
     }
@@ -15,7 +12,7 @@ public class AnimationLevel implements Runnable {
         Prongsai = 1.0f;
 
         try {
-            while (currentY < -40) {
+            while (currentY < 0) {
                 currentY += 5;
                 panel.updateState(currentY, Prongsai);
                 Thread.sleep(15);
@@ -40,8 +37,5 @@ public class AnimationLevel implements Runnable {
     }
     public float getProngsai(){
         return Prongsai;
-    }
-    public void stopAnimation(){
-        this.running = false;
     }
 }

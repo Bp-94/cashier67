@@ -1,6 +1,3 @@
-import javax.swing.*;
-import java.awt.event.*;
-import java.awt.*;
 public class MyTimer implements Runnable {
     private int totalSeconds;
     private boolean running = true;

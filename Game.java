@@ -1,9 +1,4 @@
-import java.awt.*;
 import javax.swing.*;
-import java.awt.event.*;
-import javax.swing.event.*;
-import java.util.List;
-import java.util.Random;
 
 public class Game extends JFrame implements Observer {
 
@@ -20,19 +15,6 @@ public class Game extends JFrame implements Observer {
     private int time,level;
     private double debt;
 
-
-
-
-    
-    // private List<Minigame> games = List.of(
-    //     new guessGoods(),
-    //     new guessBill(),
-    //     new guessPrice(),
-    //     new jigsaw()
-    // );
-
-    
-    // Minigame random = games.get(randomminigame.nextInt(games.size()));
     public static final Goods goodsList[] = {
         new Goods("Alcohol", "Goods/เหล้า.png",120),
         new Goods("Orange", "Goods/ส้ม.png",46),
@@ -55,14 +37,12 @@ public class Game extends JFrame implements Observer {
         gameState = PLAYING;
         presentCustomer = new Customer(this);
 
-        setSize(1920,1080);
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         
         levelCanvas = new LevelCanvas(this);
         levelCanvas.setCurrentCustomer(presentCustomer);
-        levelCanvas.setBounds(0,0,1920,1080);
         add(levelCanvas);
         
         loop = new GameLoop(this);
@@ -82,11 +62,8 @@ public class Game extends JFrame implements Observer {
     public void update(String message) {
         if (message.equals("CustomerLeft")) {
             Customer newCustomer = new Customer(this);
-            // บอก Canvas ว่าคนเก่าคือ leaving
             levelCanvas.setLeavingCustomer(presentCustomer);
-            // เปลี่ยน current
             presentCustomer = newCustomer;
-            // ส่งให้ canvas
             levelCanvas.setCurrentCustomer(presentCustomer);
             return;
         }
@@ -127,6 +104,19 @@ public class Game extends JFrame implements Observer {
             }
         }catch (NumberFormatException e) {}
         
+    }
+    public void nextLevel() {
+        dispose();
+        
+        level++;
+        debt = 1000;
+        int time;
+        
+        if (level == 2) time = 140;
+        else if (level == 3) time = 130;
+        else time = 120;
+        
+        new Game(debt,time,level);
     }
     public void updateGame() {
         if (gameState != PLAYING) return;
@@ -169,25 +159,11 @@ public class Game extends JFrame implements Observer {
         new HomeScreen();
     }
     
-    public void nextLevel() {
-        dispose();
-        
-        level++;
-        debt = 1000;
-        int time;
-        
-        if (level == 2) time = 140;
-        else if (level == 3) time = 130;
-        else time = 120;
-        
-        new Game(debt,time,level);
-    }
     
     private void stopAll() {
         bgm.stop();
         mgScheduler.stop();
         loop.stopLoop();
-        levelCanvas.getAninmation().stopAnimation();
         levelCanvas.getTimer().stopTime();
     }
     public Goods[] getGoodsList() {
@@ -220,8 +196,4 @@ public class Game extends JFrame implements Observer {
     public MinigameScheduler getMgScheduler() {
         return mgScheduler;
     }
-    // public static void main(String[] args){
-    //     Game currentGame = new Game();
-    //     currentGame.isGameEnd(0, 0, currentGame);
-    // }
 }

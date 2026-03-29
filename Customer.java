@@ -1,6 +1,3 @@
-import javax.swing.*;
-import java.awt.event.*;
-import java.awt.*;
 import java.util.*;
 
 public class Customer implements Obserable, Runnable {
@@ -48,7 +45,7 @@ public class Customer implements Obserable, Runnable {
             int ages[] = {14,18,19,21,25};
             age = ages[random.nextInt(ages.length)];
         }else {
-            haveCoupon = random.nextDouble() < 0.2; //มีโอกาส 30%
+            haveCoupon = random.nextDouble() < 0.2; //มีโอกาส 20%
             if (haveCoupon) {
                 int discounts[] = {25, 50};
                 discount = discounts[random.nextInt(discounts.length)];
@@ -72,7 +69,7 @@ public class Customer implements Obserable, Runnable {
         // เดินเข้า
         while (Enter &&x < targetX) {
             x += 4;
-            // game.getLevelCanvas().repaint();
+
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
@@ -165,7 +162,7 @@ public class Customer implements Obserable, Runnable {
     public boolean haveCoupon() {
         return haveCoupon;
     }
-    //
+    
     
     //Obserable
     @Override

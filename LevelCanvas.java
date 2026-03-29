@@ -13,7 +13,6 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     private MyTimer timerLogic;
     private AnimationLevel AnLe;
     
-    
     private int currentY;
     private float Prongsai;
     private int   minusY;
@@ -33,11 +32,10 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     private Image Level5ICon = new ImageIcon("Asset/Level5.png").getImage();
     private Image Wrong1 = new ImageIcon("CustomerImage/Question.png").getImage();
     private Image Wrong2 = new ImageIcon("CustomerImage/Exclamation.png").getImage();
-    private Image CustomerBank = new ImageIcon("Asset/CustomerBank.png").getImage();
     private Image couponmini = new ImageIcon("CustomerImage/minicoupon.png").getImage(); 
     private Image minusTenImg = new ImageIcon("Asset/minus10.png").getImage();
     private Image IDmini = new ImageIcon("CustomerImage/mini_ID.png").getImage(); 
-    private Image presentcustomerImg;
+    private Image presentcustomerImg , leavingCustomerImg;
     
     private JTextField txt = new JTextField();
     private JTextField txtAns =  new JTextField();
@@ -98,9 +96,6 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         
         Timer refresh = new Timer(16, e -> repaint());
         refresh.start();
-        // 2. สร้าง Thread แยกเพื่อให้นาฬิกาวิ่งเลนขนาน (หน้าจอจะได้ไม่ค้าง)
-        // 3. สร้าง Timer ตัวเล็กๆ เพื่อสั่งให้หน้าจอ "วาดใหม่" (Repaint) ทุกๆ 0.1 วินาที
-        // เพื่อให้เลขนาฬิกาที่อัปเดตใน Thread โชว์บนหน้าจอทันที
         AnLe = new AnimationLevel(this);
         Thread AL = new Thread(AnLe);
         AL.start();
@@ -157,21 +152,12 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
                 }
             }
         });
+        
 
         add(txtAns);
         add(txt);
         txt.setPreferredSize(new Dimension(197, 33));
         txtAns.setPreferredSize(new Dimension(200,33));
-        
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    // ล็อกให้ txtAns พิมพ์ได้เฉพาะตัวเลข
     }
 
     // สำหรับอนิเมชั่นของ levelicon
@@ -196,6 +182,7 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
     
     public void setLeavingCustomer(Customer c) {
         this.leavingCustomer = c;
+        this.leavingCustomerImg = new ImageIcon(c.getimagePath()).getImage();
     }
     public void doLayout(){
         
@@ -254,21 +241,17 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         int gy = (int)(550 * scaleY);
         
         
-        // Rectangle s = scale(sell);
-        // Rectangle ns = scale(sell);
 
         
         if (currentCustomer != null) {
             CountWrong = currentCustomer.getCountWrong();
         }
-        // Rectangle gl = scale(goodsListRect);
         
         
         g2.drawImage(bg,0,0,getWidth(),getHeight(),this);
         // วาดคนที่กำลังออก
         if (leavingCustomer != null) {
-            Image leaveImg = new ImageIcon(leavingCustomer.getimagePath()).getImage();
-            g2.drawImage(leaveImg, leavingCustomer.getX(), r.y, r.width, r.height, this);
+            g2.drawImage(leavingCustomerImg, leavingCustomer.getX(), r.y, r.width, r.height, this);
         }
         
         // วาดคนปัจจุบัน
@@ -280,31 +263,14 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         g2.setComposite(ac);
         Image[] icons = {Level1ICon, Level2ICon, Level3ICon, Level4ICon, Level5ICon};
         int lv = game.getLevel();
-        if (lv >= 1 && lv <= 5) {
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, Prongsai));
-            g2.drawImage(icons[lv - 1], LI.x, currentY, LI.width, LI.height, this);
-            g2.setComposite(oldComposite);
-        }
-        // if (game.getLevel() == 1) {
-            //     g2.drawImage(Level1ICon, LI.x,currentY,LI.width,LI.height,this);
-            // }
-            // else if (game.getLevel() == 2){
-                //     g2.drawImage(Level2ICon, LI.x,currentY,LI.width,LI.height,this);
-                // }
-                // else if (game.getLevel() == 3){
-                    //     g2.drawImage(Level3ICon, LI.x,currentY,LI.width,LI.height,this);
-                    // }
-                    // else if (game.getLevel() == 4){
-                        //     g2.drawImage(Level4ICon, LI.x,currentY,LI.width,LI.height,this);
-                        // }
-                        // else if (game.getLevel() == 5){
-                            //     g2.drawImage(Level5ICon, LI.x,currentY,LI.width,LI.height,this);
-                            // }
-                            if (minusAlpha > 0) {
-                                AlphaComposite acMinus = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, minusAlpha);
-                                g2.setComposite(acMinus);
-                                g2.drawImage(minusTenImg, Mi.x,minusY, Mi.width, Mi.height, this);
-            g2.setComposite(oldComposite);
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, Prongsai));
+        g2.drawImage(icons[lv - 1], LI.x, currentY, LI.width, LI.height, this);
+        g2.setComposite(oldComposite);
+        if (minusAlpha > 0) {
+            AlphaComposite acMinus = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, minusAlpha);
+              g2.setComposite(acMinus);
+        g2.drawImage(minusTenImg, Mi.x,minusY, Mi.width, Mi.height, this);
+        g2.setComposite(oldComposite);
         }
         
         g2.drawImage(table_calculator_goodslist,0,0,getWidth(),getHeight(),this);
@@ -342,7 +308,7 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
             timeToShow = timerLogic.getTimeString();
         }
         
-        // วาดลงบนหน้าจอ (ตำแหน่ง x=80, y=100)
+       
         g.drawString(timeToShow, tx, ty);
         
         g2.setFont(customFont.deriveFont((float)(68 * scaledebt)) );
@@ -350,7 +316,7 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         g2.drawString(String.valueOf(game.getDebt()), dx, dy);
         
         
-        // เอาไว้ดีบัคเช็คตำแหน่งปุ่มต่างๆ
+        // เก็บเอาไว้เผื่อ ดีบัคเช็คตำแหน่งปุ่มต่างๆ
         // g2.setColor(Color.RED);
         
         // g2.draw(btn7);
@@ -383,40 +349,6 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         // g2.draw(scale(notSell));
         // g2.draw(scale(wrongRect));
     }
-    
-    // public static void main(String[] args){
-        
-    //     JFrame frame = new JFrame("CASHIER");
-    //     Font myFont = new Font("Serif", Font.PLAIN, 20);
-    
-    //     frame.setSize(1920,1080);
-    //     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-    //     Calculator panel = new Calculator(new Game());
-    //     panel.setLayout(null);
-    //     txt.setFont(myFont);
-    //     txtAns.setFont(myFont);
-    //     txt.setOpaque(false);                // ทำให้พื้นหลังโปร่งใส
-    //     txt.setBackground(new Color(0,0,0,0)); // ตั้งค่าสีพื้นหลังเป็นใส (Alpha = 0)
-    //     txt.setBorder(null);                 // เอาเส้นขอบสี่เหลี่ยมออก
-    //     txtAns.setOpaque(false);                // ทำให้พื้นหลังโปร่งใส
-    //     txtAns.setBackground(new Color(0,0,0,0)); // ตั้งค่าสีพื้นหลังเป็นใส (Alpha = 0)
-    //     txtAns.setBorder(null);                 // เอาเส้นขอบสี่เหลี่ยมออก
-    //     txt.setBounds(1051, 175,202,40);
-    //     txt.setCaretColor(new Color(0,0,0,0));
-    //     txtAns.setBounds(967, 620, 345, 42);
-    //     txt.setEditable(false);
-    //     // txt.setOpaque(false);
-    //     // txt.setBorder(null);
-    //     panel.add(txtAns);
-    //     panel.add(txt);
-    //     frame.add(panel);
-    
-    //     frame.setLocationRelativeTo(null);
-    //     frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-    //     frame.setVisible(true);
-    // }
-    // วาดรูปลง JPanel
     
     public static double calculate(String exp){
         
@@ -453,8 +385,6 @@ public void mousePressed(MouseEvent e) {
     System.out.println("Click in rect? " + couponminiRect.contains(x,y));
     
     System.out.println("CLICK");
-    double num1, num2;
-    String op;
     // กดแล้วขึ้นภาพขึ้นตัวอักษร
     if (currentFocus == null){currentFocus = txt;}
     if (btn7.contains(x,y)) {
@@ -575,7 +505,7 @@ public void mouseMoved(MouseEvent e) {
                 dialog.setLocationRelativeTo(null);
     
                 MouseAdapter closeEvent = new MouseAdapter() {
-                    public void mouseClicked(MouseEvent e) {
+                    public void mousePressed(MouseEvent e) {
                         dialog.dispose();
                     }
                 };
@@ -607,6 +537,7 @@ public void mouseMoved(MouseEvent e) {
             //  เพื่อให้ถ้าเกิด กำลังโชว์คูปอง ปุ่ม ของ id card มันจะได้กดไม่ได้
             notSell = null;
             sell = null;
+            
             dialog = new JDialog(game, true);
             dialog.setSize(game.getWidth() - 100, game.getHeight() - 100);
             dialog.setLocationRelativeTo(game);
@@ -668,7 +599,7 @@ public void mouseMoved(MouseEvent e) {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // TODO Auto-generated method stub
+        
         throw new UnsupportedOperationException("Unimplemented method 'actionPerformed'");
     }
     public MyTimer getTimer() { 

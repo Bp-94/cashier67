@@ -11,10 +11,10 @@ public class GameLoop implements Runnable {
     @Override
     public void run() {
         while (running) {
-            game.updateGame(); // 🔥 เรียกเช็คเกมตลอด
+            game.updateGame(); 
 
             try {
-                Thread.sleep(200); // 0.1 วิ
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -1,4 +1,4 @@
-import javax.swing.*;
+
 import java.util.Random;
 
 public class MinigameScheduler {
@@ -8,8 +8,8 @@ public class MinigameScheduler {
     private final Random random;
     private boolean minigameActive = false;
     private boolean stopped = false;
-    private static final int INTERVAL_MS = 25_000; // ทุก 20 วิ
-    private static final double CHANCE    = 0.2;    // โอกาส 50%
+    private static final int INTERVAL_MS = 20000; 
+    private static final double CHANCE    = 0.25;    
     
 
     public MinigameScheduler(Game game) {
@@ -32,9 +32,9 @@ public class MinigameScheduler {
         timer.stop();
         minigameActive = true;
 
-        // โผล่ทับเกมหลักเลย ไม่มีแจ้งเตือน
+        
         Minigame mg = pickRandom();
-        mg.play(); // Modal dialog — MyTimer ยังเดินต่อ ✅
+        mg.play(); 
 
         // ตัดสินผล
         if (!stopped) {

@@ -8,6 +8,8 @@ public class HomeScreen implements MouseListener {
     private HomePanel panel;
     private JLabel btnStart, btnExit;
     private int startW, startH, exitW, exitH;
+    private Image oriStartImg;
+    private Image oriExitImg;
 
     public HomeScreen() {
 
@@ -16,22 +18,17 @@ public class HomeScreen implements MouseListener {
         panel.setLayout(null);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
-        ImageIcon startIcon = new ImageIcon(getClass().getResource("/images/Startbtn.PNG"));
-        Image startImg = startIcon.getImage().getScaledInstance(600, 500, Image.SCALE_SMOOTH);
-        btnStart = new JLabel(new ImageIcon(startImg));
+        oriStartImg = new ImageIcon(getClass().getResource("/images/Startbtn.PNG")).getImage();
+        oriExitImg = new ImageIcon(getClass().getResource("/images/Exitbtn.PNG")).getImage();
+
+        btnStart = new JLabel(new ImageIcon(oriStartImg));
         btnStart.addMouseListener(this);
         btnStart.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        startW = 600;
-        startH = 500;
         panel.add(btnStart);
 
-        ImageIcon exitIcon = new ImageIcon(getClass().getResource("/images/Exitbtn.PNG"));
-        Image exitImg = exitIcon.getImage().getScaledInstance(600, 500, Image.SCALE_SMOOTH);
-        btnExit = new JLabel(new ImageIcon(exitImg));
+        btnExit = new JLabel(new ImageIcon(oriExitImg));
         btnExit.addMouseListener(this);
         btnExit.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        exitW = 600;
-        exitH = 500;
         panel.add(btnExit);
 
         panel.addComponentListener(new ComponentAdapter() {
@@ -58,21 +55,19 @@ public class HomeScreen implements MouseListener {
         exitH = startH;
 
         // scale button
-        Image startImg = new ImageIcon(getClass().getResource("/images/Startbtn.PNG"))
-                .getImage().getScaledInstance(startW, startH, Image.SCALE_SMOOTH);
+        Image startImg = oriStartImg.getScaledInstance(startW, startH, Image.SCALE_SMOOTH);
         btnStart.setIcon(new ImageIcon(startImg));
 
-        Image exitImg = new ImageIcon(getClass().getResource("/images/Exitbtn.PNG"))
-                .getImage().getScaledInstance(exitW, exitH, Image.SCALE_SMOOTH);
+        Image exitImg = oriExitImg.getScaledInstance(exitW, exitH, Image.SCALE_SMOOTH);
         btnExit.setIcon(new ImageIcon(exitImg));
 
         //center
         int centerX = (w - startW) / 2;
         //Start(under logo)
-        int startY = (int)(h * 0.6);
+        int startY = (int)(h * 0.60);
 
         btnStart.setBounds(centerX, startY, startW, startH);
-        btnExit.setBounds(centerX, startY + startH + 15, exitW, exitH);
+        btnExit.setBounds(centerX, startY + startH + 13, exitW, exitH);
     }
 
     @Override
@@ -85,9 +80,7 @@ public class HomeScreen implements MouseListener {
             System.exit(0);
         }
     }
-    public void mouseClicked(MouseEvent e) {
-    }
-    
+    public void mouseClicked(MouseEvent e) {}
     public void mouseEntered(MouseEvent e) {}
     public void mouseExited(MouseEvent e) {}
     public void mouseReleased(MouseEvent e) {}

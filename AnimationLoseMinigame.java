@@ -1,5 +1,3 @@
-import java.awt.*;
-import javax.swing.*;
 public class AnimationLoseMinigame implements Runnable {
     private LevelCanvas panel;
     private int minusY;
