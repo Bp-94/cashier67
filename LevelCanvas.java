@@ -12,16 +12,15 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
 
     private MyTimer timerLogic;
     private AnimationLevel AnLe;
-    
+
     private int currentY;
     private float Prongsai;
     private int   minusY;
     private float minusAlpha;
-    
+
     JDialog dialog;
     private boolean dialogOpen;
     Rectangle sell,notSell,closeCoupon;
-    
     
     private Image bg = new ImageIcon("Asset/bg.png").getImage();
     private Image table_calculator_goodslist = new ImageIcon("Asset/Calculator_Table_ListGoods.png").getImage();
@@ -52,7 +51,6 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
 
     private Game game;
     
-
     Rectangle btn7 = new Rectangle(1063,302,50,45);
     Rectangle btn8 = new Rectangle(1119,303,50,43);
     Rectangle btn9 = new Rectangle(1170,303,48,43);
@@ -96,9 +94,7 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         
         Timer refresh = new Timer(16, e -> repaint());
         refresh.start();
-        AnLe = new AnimationLevel(this);
-        Thread AL = new Thread(AnLe);
-        AL.start();
+        new AnimationLevel(this).play();
         
         try {
             customFont = Font.createFont(Font.TRUETYPE_FONT, new File("2005_iannnnnJPG.ttf"));
@@ -216,7 +212,6 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         );
     }
     
-    
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
@@ -240,20 +235,16 @@ public class LevelCanvas extends JPanel implements MouseListener,ActionListener,
         int gx = (int)(50 * scaleX);
         int gy = (int)(550 * scaleY);
         
-        
-
-        
         if (currentCustomer != null) {
             CountWrong = currentCustomer.getCountWrong();
         }
-        
-        
+
         g2.drawImage(bg,0,0,getWidth(),getHeight(),this);
         // วาดคนที่กำลังออก
         if (leavingCustomer != null) {
             g2.drawImage(leavingCustomerImg, leavingCustomer.getX(), r.y, r.width, r.height, this);
         }
-        
+
         // วาดคนปัจจุบัน
         if (currentCustomer != null) {
             g2.drawImage(presentcustomerImg, currentCustomer.getX(), r.y, r.width, r.height, this);
@@ -444,7 +435,10 @@ public void mousePressed(MouseEvent e) {
             
         // ของ IDCARD
         if (notSell != null && notSell.contains(e.getPoint())) {
+            // เซ็ตไว้ไม่ให้คนกดตัวบัตรซ้ำได้
             dialogOpen = false;
+
+            // เซ็ตไว้ว่าพอกดแล้ว ก็จะกดไม่ได้อีก
             notSell = null; 
             sell = null; 
             if (currentCustomer.getAge() > 20) {
@@ -497,7 +491,7 @@ public void mouseMoved(MouseEvent e) {
                 dialog.setSize(screen);
                 dialog.setUndecorated(true);
                 dialog.setBackground(new Color(0,0,0,50));
-    
+
                 Image img = new ImageIcon("Asset/ListGoods.png").getImage();
                 Image scaled = img.getScaledInstance(screen.width, screen.height, Image.SCALE_SMOOTH);
                 JLabel label = new JLabel(new ImageIcon(scaled));
@@ -611,8 +605,4 @@ public void mouseMoved(MouseEvent e) {
     public JTextField getTxtAns(){
         return txtAns;
     }
-    public AnimationLevel getAninmation(){
-        return AnLe;
-    }
-    
 }

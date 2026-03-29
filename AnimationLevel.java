@@ -32,10 +32,8 @@ public class AnimationLevel implements Runnable {
             ex.printStackTrace();
         }
     }
-    public int getCurrentY(){
-        return currentY;
-    }
-    public float getProngsai(){
-        return Prongsai;
+
+    public void play() {
+        new Thread(this).start();
     }
 }

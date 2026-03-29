@@ -8,11 +8,13 @@ public class MinigameScheduler {
     private final Random random;
     private boolean minigameActive = false;
     private boolean stopped = false;
+    private boolean running = true;
     private static final int INTERVAL_MS = 20000; 
     private static final double CHANCE    = 0.25;    
     
 
     public MinigameScheduler(Game game) {
+        
         this.game   = game;
         this.random = new Random();
         timer = new javax.swing.Timer(INTERVAL_MS, e -> tryTrigger());
@@ -23,10 +25,14 @@ public class MinigameScheduler {
         stopped = false;
         timer.start();
      }
-    public void stop()  { timer.stop();  }
+    public void stop()  { 
+        stopped = true;
+        timer.stop();  
+    }
     public boolean isActive() { return minigameActive; }
 
     private void tryTrigger() {
+        if (!game.isRunningMinigame()) return;
         if (random.nextDouble() >= CHANCE) return;
 
         timer.stop();

@@ -5,6 +5,8 @@ public class Game extends JFrame implements Observer {
     private static final int PLAYING = 0;
     private static final int TRANSITION = 1;
     private int gameState;
+
+    private boolean runningMinigame = true;
     
     private GameLoop loop;
     private LevelCanvas levelCanvas;
@@ -37,7 +39,7 @@ public class Game extends JFrame implements Observer {
         gameState = PLAYING;
         presentCustomer = new Customer(this);
 
-
+        setSize(1980,1020);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         
@@ -130,6 +132,7 @@ public class Game extends JFrame implements Observer {
         }
     }
     public void winGame() {
+        // เอาไว้กันไม่ให้เข้าเมธอด win รัวๆๆ
         if (gameState != PLAYING) {
             return;
         }
@@ -147,6 +150,7 @@ public class Game extends JFrame implements Observer {
         }
     }
     public void loseGame() {
+        // เอาไว้กันไม่ให้เข้าเมธอด lose รัวๆๆ
         if (gameState != PLAYING) {
             return;
         }
@@ -158,9 +162,9 @@ public class Game extends JFrame implements Observer {
         dispose();
         new HomeScreen();
     }
-    
-    
+
     private void stopAll() {
+        runningMinigame = false;
         bgm.stop();
         mgScheduler.stop();
         loop.stopLoop();
@@ -196,4 +200,7 @@ public class Game extends JFrame implements Observer {
     public MinigameScheduler getMgScheduler() {
         return mgScheduler;
     }
+    public boolean isRunningMinigame() {
+        return runningMinigame;
+}
 }
